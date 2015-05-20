@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context="com.acistek.cls.FavoriteActivity">
+    <item
+        android:id="@+id/action_edit_favorite"
+        android:title="@string/action_edit_favorite"
+        app:showAsAction="withText|always" />
+    <item
+        android:id="@+id/action_done_favorite"
+        android:title="@string/profile_grouplist_done"
+        android:visible="false"
+        app:showAsAction="withText|always" />
+</menu>

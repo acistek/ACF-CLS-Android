@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.acistek.cls" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <permission
+        android:name="com.acistek.cls.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.acistek.cls.permission.C2D_MESSAGE" />
+
+    <application
+        android:name=".MainApplication"
+        android:allowBackup="true"
+        android:configChanges="orientation"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation"
+            android:label="@string/app_name"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_search"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" >
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_profile"
+            android:parentActivityName=".SearchActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".EmailActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_email"
+            android:parentActivityName=".ProfileActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+        </activity>
+        <activity
+            android:name=".FavoriteActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_favorite"
+            android:parentActivityName=".SearchActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".NotificationActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_notification"
+            android:parentActivityName=".SearchActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".CoopActivity"
+            android:configChanges="orientation"
+            android:label="CoopActivity"
+            android:parentActivityName=".SearchActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".WebviewActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_webview"
+            android:parentActivityName=".NotificationActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <receiver
+            android:name=".GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <!-- Receives the actual messages. -->
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".GcmIntentService" />
+    </application>
+
+</manifest>

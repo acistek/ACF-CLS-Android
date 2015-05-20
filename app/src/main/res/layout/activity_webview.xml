@@ -1,0 +1,123 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context="com.acistek.cls.WebviewActivity">
+
+    <LinearLayout
+        android:id="@+id/webview_website_activity"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="10" >
+
+            <WebView
+                android:id="@+id/webview_website_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <ProgressBar android:id="@+id/progresswebview"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleLarge"
+                android:visibility="gone"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/webview_web_bottom_buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:background="#F8F8F8"
+            android:layout_weight="90">
+
+            <LinearLayout
+                android:id="@+id/webview_back_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".3"
+                android:orientation="vertical"
+                android:background="@drawable/search_top_border"
+                android:paddingTop="10dp">
+
+                <ImageButton
+                    android:id="@+id/webview_web_back_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:src="@drawable/ic_action_back"
+                    android:background="@null" />
+
+                <TextView
+                    android:id="@+id/webview_back_button_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:textColor="#5d5d5d"
+                    android:text="Back"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/webview_refresh_button"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".2"
+                android:background="@drawable/search_top_border"
+                android:paddingTop="10dp">
+
+                <ImageButton
+                    android:id="@+id/webview_web_refresh_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:src="@drawable/ic_action_refresh_gray"
+                    android:background="@null"/>
+
+                <TextView
+                    android:id="@+id/webview_refresh_button_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:textColor="#5d5d5d"
+                    android:text="Refresh"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/webview_forward_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".3"
+                android:orientation="vertical"
+                android:background="@drawable/search_top_border"
+                android:paddingTop="10dp">
+
+                <ImageButton
+                    android:id="@+id/webview_web_forward_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:src="@drawable/ic_action_forward"
+                    android:background="@null"/>
+
+                <TextView
+                    android:id="@+id/webview_forward_button_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="50"
+                    android:textColor="#5d5d5d"
+                    android:text="Forward"
+                    android:gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
