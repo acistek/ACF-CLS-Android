@@ -1,0 +1,90 @@
+<resources>
+    <string name="app_name">CLS</string>
+
+    <!-- Login -->
+    <string name="hhs">HHS User</string>
+    <string name="nonhhs">Non-HHS User</string>
+    <string name="username">USERNAME</string>
+    <string name="password">PASSWORD</string>
+    <string name="signin">Sign In</string>
+
+    <!-- Search -->
+    <string name="action_coop">COOP</string>
+    <string name="search_name">Enter a name to search...</string>
+    <string name="search_myprofile">My Profile</string>
+    <string name="search_favorites">Favorites</string>
+    <string name="search_notifications">Notifications</string>
+    <string name="search_signout">Sign Out</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Profile -->
+    <string name="profile_fav">Add to Favs</string>
+    <string name="profile_call">Call</string>
+    <string name="profile_text">Text</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_map">Map/Dirs</string>
+    <string name="profile_error">There was a problem retrieving the data.</string>
+    <string name="profile_empty_group_name">Please enter Group Name</string>
+    <string name="profile_favorite_error">There was a problem. Please try again later.</string>
+    <string name="profile_grouplist_cancel">Cancel</string>
+    <string name="profile_grouplist_done">Done</string>
+
+    <!-- Email -->
+    <string name="action_send_email">Send</string>
+    <string name="email_alert">Mail Alert</string>
+
+    <!-- Favorite -->
+    <string name="action_edit_favorite">Edit</string>
+
+    <!-- Notifications -->
+    <string name="notifications_alert">All systems are operational as of</string>
+    <string name="notifications_timedown">Time Down:</string>
+    <string name="notifications_responsible">Responsible:</string>
+
+    <!-- Drawer Menu -->
+    <string name="drawer_menu_title">Menu</string>
+
+    <!-- Alert Messages -->
+    <string name="alert_error">Error</string>
+    <string name="alert_no_service">Service is temporarily unavailable.</string>
+    <string name="alert_no_internet">Please check your Internet connection.</string>
+    <string name="alert_sign_out">Sign Out Alert</string>
+    <string name="alert_sign_out_message">Are you sure you want to Sign Out?</string>
+    <string name="alert_sign_in">Sign In Failed</string>
+    <string name="alert_sign_in_no_user">Please enter Username and Password.</string>
+    <string name="alert_ok">OK</string>
+    <string name="alert_cancel">Cancel</string>
+    <string name="alert_delete">Delete</string>
+    <string name="alert_grouplist">Group List</string>
+
+    <!-- Activity Names -->
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="network_connection">NetworkConnection</string>
+    <string name="title_activity_email">EmailActivity</string>
+    <string name="title_activity_favorite">FavoriteActivity</string>
+    <string name="title_activity_notification">NotificationActivity</string>
+    <string name="title_activity_webview">WebviewActivity</string>
+
+    <!-- Menu -->
+    <string name="title_section1">Search</string>
+    <string name="title_section2">ACF Buildings</string>
+    <string name="title_section3">ACF Web Site</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- MS Stuff -->
+    <string name="building_refresh">building_refresh</string>
+
+    <string name= "max_distance">3000.0 miles</string>
+    <string name="building_within_label">Building Within:</string>
+    <string name="distance">Distance:&#160;</string>
+    <string name="cell_title">Cell Phone:</string>
+    <string name="office_title">Office Phone:</string>
+    <string name="dialog_title">Please select the action below</string>
+    <string name="call_cell_label">Call Cell</string>
+    <string name="text_cell_label">Text Cell</string>
+    <string name="call_office_label">Call Office</string>
+
+</resources>

@@ -1,0 +1,114 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="100"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    tools:context="com.acistek.cls.LoginActivity">
+
+    <!--<TextView android:text="@string/hello_world" android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:gravity="top"
+        android:background="#DACDB7">
+
+        <ImageView
+            android:id="@+id/headerlogin"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:src="@drawable/acf" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="35"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <info.hoang8f.android.segmented.SegmentedGroup
+            android:id="@+id/segmentedlogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/hhsbutton"
+                android:checked="true"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/hhs"
+
+                style="@style/RadioButton" />
+
+            <RadioButton
+                android:id="@+id/nonhhsbutton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="@string/nonhhs"
+                style="@style/RadioButton" />
+
+        </info.hoang8f.android.segmented.SegmentedGroup>
+
+        <EditText
+            android:id="@+id/login_username"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:maxLength="25"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.1234567890"
+            android:hint="@string/username"
+            android:textColorHint="#D5D5DA"
+            android:background="@drawable/login_textfield" />
+
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:maxLength="25"
+            android:inputType="textPassword"
+            android:hint="@string/password"
+            android:textColorHint="#D5D5DA"
+            android:background="@drawable/login_textfield" />
+
+        <Button
+            android:id="@+id/login_signin"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:textSize="22dp"
+            android:textAllCaps="false"
+            android:textColor="@drawable/login_button_text_color"
+            android:background="@drawable/login_button"
+            android:onClick="login"
+            android:text="@string/signin"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="55"
+        android:gravity="bottom">
+
+        <WebView android:id="@+id/webviewterms"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fadeScrollbars="true" />
+        <ProgressBar android:id="@+id/progresslogin"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleLarge"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</LinearLayout>
