@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context="com.acistek.cls.CoopActivity">
+    <item
+        android:id="@+id/coop_blank_ac"
+        android:title=""
+        android:enabled="false"
+        android:icon="@drawable/bar"
+        app:showAsAction="always" />
+</menu>

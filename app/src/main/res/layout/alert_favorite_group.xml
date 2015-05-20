@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/alert_favorite_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:id="@+id/alert_favorite_message"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/alert_favorite_group_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:maxLength="25"
+        android:background="@drawable/login_textfield"/>
+
+    <Button
+        android:id="@+id/alert_favorite_ok"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alert_ok"
+        android:textAllCaps="false"
+        android:background="@drawable/alert_button_no_bottom" />
+    <Button
+        android:id="@+id/alert_favorite_grouplist"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alert_grouplist"
+        android:textAllCaps="false"
+        android:background="@drawable/alert_button_no_bottom" />
+    <Button
+        android:id="@+id/alert_favorite_cancel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alert_cancel"
+        android:textAllCaps="false"
+        android:background="@drawable/alert_button"/>
+
+</LinearLayout>
