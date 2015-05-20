@@ -28,3 +28,4 @@ proguard/
 
 #git
 .git/
+.idea/workspace.xml
