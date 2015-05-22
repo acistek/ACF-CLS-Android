@@ -14,7 +14,12 @@ import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -613,6 +618,59 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
                         if(success == 1){
                             String message = response.getString("message");
 
+                            final String groupCharacterSet = "\'1234567890-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+                            final InputFilter groupFilter = new InputFilter() {
+                                boolean shouldShowAlert = true;
+
+                                @Override
+                                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                                    boolean keepOriginal = true;
+                                    StringBuilder sb = new StringBuilder(end - start);
+                                    for (int i = start; i < end; i++) {
+                                        char c = source.charAt(i);
+                                        if (isCharAllowed(c)) // put your condition here
+                                            sb.append(c);
+                                        else
+                                            keepOriginal = false;
+                                    }
+                                    if (keepOriginal)
+                                        return null;
+                                    else {
+                                        if(shouldShowAlert){
+                                            shouldShowAlert = false;
+
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                                            builder.setMessage("The Group Name must be in letters, numbers, hyphens, single quotes, and spaces only.");
+                                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    shouldShowAlert = true;
+                                                }
+                                            });
+                                            AlertDialog dialog = builder.show();
+
+                                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                                            messageView.setGravity(Gravity.CENTER);
+
+                                        }
+
+
+                                        if (source instanceof Spanned) {
+                                            SpannableString sp = new SpannableString(sb);
+                                            TextUtils.copySpansFrom((Spanned) source, start, sb.length(), null, sp, 0);
+                                            return sp;
+                                        } else {
+                                            return sb;
+                                        }
+                                    }
+                                }
+
+                                private boolean isCharAllowed(char c) {
+                                    return Character.isLetterOrDigit(c) || Character.isSpaceChar(c) || groupCharacterSet.contains("" + c);
+                                }
+                            };
+
                             if(resultCount == 0){
                                 LinearLayout glayout = new LinearLayout(ProfileActivity.this);
                                 glayout.setOrientation(LinearLayout.VERTICAL);
@@ -621,7 +679,43 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
 
                                 final EditText gname = new EditText(ProfileActivity.this);
                                 gname.setBackgroundDrawable(resources.getDrawable(R.drawable.login_textfield));
-                                gname.setFilters(new InputFilter[]{var.filter, new InputFilter.LengthFilter(25)});
+                                gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
+
+                                gname.addTextChangedListener(new TextWatcher() {
+                                    boolean shouldShowAlert = true;
+
+                                    @Override
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                        if(s.length() == 35){
+                                            if(shouldShowAlert){
+                                                shouldShowAlert = false;
+
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                                                builder.setMessage("The Group Name must be less than 35 characters.");
+                                                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        shouldShowAlert = true;
+                                                    }
+                                                });
+                                                AlertDialog dialog = builder.show();
+
+                                                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                                                messageView.setGravity(Gravity.CENTER);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable s) {
+
+                                    }
+                                });
 
                                 glayout.addView(gname, params);
 
@@ -640,7 +734,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
                                             @Override
                                             public void onClick(View v) {
                                                 if(gname.getText().toString().trim().equalsIgnoreCase("")){
-                                                    var.showAlert(ProfileActivity.this, "", "Please enter Group Name");
+                                                    var.showAlert(ProfileActivity.this, "", "Please enter a Group Name");
                                                     gname.setText("");
                                                 }
                                                 else{
@@ -677,7 +771,43 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
                                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                                 final View layout = inflater.inflate(R.layout.alert_favorite_group, (ViewGroup) findViewById(R.id.alert_favorite_layout));
                                 final EditText gname = (EditText) layout.findViewById(R.id.alert_favorite_group_name);
-                                gname.setFilters(new InputFilter[]{var.filter});
+                                gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
+
+                                gname.addTextChangedListener(new TextWatcher() {
+                                    boolean shouldShowAlert = true;
+
+                                    @Override
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                        if(s.length() == 35){
+                                            if(shouldShowAlert){
+                                                shouldShowAlert = false;
+
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                                                builder.setMessage("The Group Name must be less than 35 characters.");
+                                                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        shouldShowAlert = true;
+                                                    }
+                                                });
+                                                AlertDialog dialog = builder.show();
+
+                                                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                                                messageView.setGravity(Gravity.CENTER);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable s) {
+
+                                    }
+                                });
 
                                 final TextView gmessage = (TextView) layout.findViewById(R.id.alert_favorite_message);
                                 gmessage.setText(message);
@@ -696,7 +826,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
                                             @Override
                                             public void onClick(View v) {
                                                 if(gname.getText().toString().trim().equalsIgnoreCase("")){
-                                                    var.showAlert(ProfileActivity.this, "", "Please enter Group Name");
+                                                    var.showAlert(ProfileActivity.this, "", "Please enter a Group Name");
                                                     gname.setText("");
                                                 }
                                                 else{

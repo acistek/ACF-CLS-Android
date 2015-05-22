@@ -3,6 +3,7 @@ package com.acistek.cls;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -12,7 +13,9 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -93,8 +96,6 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
         gcmClient = new GcmClient(getApplicationContext(), this);
         session = new SessionManager(getApplicationContext());
 
-
-
         if(session.isLoggedIn() && !session.isExpired()){
             Intent i = new Intent(LoginActivity.this, SearchActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -117,7 +118,79 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
             registerReceiver(csr, connFilter);
 
             segmented.setTintColor(Color.parseColor("#336A90"), Color.parseColor("#FFFFFF"));
-            passwordView.setFilters(new InputFilter[]{var.filter});
+            passwordView.setFilters(new InputFilter[]{var.filter, new InputFilter.LengthFilter(30)});
+
+            usernameView.addTextChangedListener(new TextWatcher() {
+                boolean shouldShowAlert = true;
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    if(s.length() == 30){
+                        if(shouldShowAlert){
+                            shouldShowAlert = false;
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setMessage("Please enter less than 30 characters.");
+                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    shouldShowAlert = true;
+                                }
+                            });
+                            AlertDialog dialog = builder.show();
+
+                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                            messageView.setGravity(Gravity.CENTER);
+                        }
+                    }
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
+            passwordView.addTextChangedListener(new TextWatcher() {
+                boolean shouldShowAlert = true;
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    if(s.length() == 30){
+                        if(shouldShowAlert){
+                            shouldShowAlert = false;
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setMessage("Please enter less than 30 characters.");
+                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    shouldShowAlert = true;
+                                }
+                            });
+                            AlertDialog dialog = builder.show();
+
+                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                            messageView.setGravity(Gravity.CENTER);
+                        }
+                    }
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
 
             var.outOfFocus(usernameView, this);
             var.outOfFocus(passwordView, this);

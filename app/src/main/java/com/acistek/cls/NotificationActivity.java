@@ -1,6 +1,8 @@
 package com.acistek.cls;
 
+import android.app.AlertDialog;
 import android.app.Notification;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
@@ -10,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -200,7 +204,25 @@ public class NotificationActivity extends ActionBarActivity implements Connectio
 
                     if(resultCount == 0){
                         Date date = new Date();
-                        var.showAlert(NotificationActivity.this, "", resources.getString(R.string.notifications_alert) + " " + date.toString());
+                        SimpleDateFormat format = new SimpleDateFormat("MMM d, yyyy, hh:mm aaa");
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(NotificationActivity.this);
+                        builder.setMessage(resources.getString(R.string.notifications_alert) + " " + format.format(date));
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                NotificationActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        NotificationActivity.this.onBackPressed();
+                                    }
+                                });
+                            }
+                        });
+                        AlertDialog dialog = builder.show();
+
+                        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                        messageView.setGravity(Gravity.CENTER);
                     }
                     else{
                         JSONArray notificationItems = response.getJSONArray("results");

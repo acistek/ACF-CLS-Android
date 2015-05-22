@@ -269,8 +269,15 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        buildingActivity.seekBar.setProgress(60);
-                        buildingActivity.getBuildingInfo(3000);
+                        SearchActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                buildingActivity.setGPS();
+                            }
+                        });
+
+                        buildingActivity.seekBar.setProgress(buildingActivity.current_progress);
+                        buildingActivity.getBuildingInfo(buildingActivity.current_seekbar_value);
                     }
                 }).start();
 
@@ -318,6 +325,9 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
                         menu.findItem(R.id.building_refresh).setVisible(false);
                     }
                     searchActivityLayout.setVisibility(View.VISIBLE);
+                    clearSearch(editText);
+                    searchResultList.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
                     websiteActivityLayout.setVisibility(View.GONE);
                     buildingActivityLayout.setVisibility(View.GONE);
                     break;
@@ -365,6 +375,12 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    SearchActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            buildingActivity.setGPS();
+                        }
+                    });
                     buildingActivity.getBuildingInfo(buildingActivity.current_seekbar_value);
                     SearchActivity.this.runOnUiThread(new Runnable() {
                         @Override
@@ -397,6 +413,12 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
+                            SearchActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    buildingActivity.setGPS();
+                                }
+                            });
                             buildingActivity.seekBar.setProgress(60);
                             buildingActivity.getBuildingInfo(3000);
                         }
@@ -516,10 +538,10 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
                             userSearchArrayList = new ArrayList<UserSearch>();
                             if (searchResultCnt == 0)
                                 searchRecordCnt.setText("No record");
-                            else if (searchResultCnt == 1)
-                                searchRecordCnt.setText(searchResultCnt + " record");
+//                            else if (searchResultCnt == 1)
+//                                searchRecordCnt.setText(searchResultCnt + " record");
                             else
-                                searchRecordCnt.setText(searchResultCnt + " records");
+                                searchRecordCnt.setText(searchResultCnt + " record(s)");
                         }
 
                         for (int i = 0; i < list.length(); i++) {
@@ -572,7 +594,7 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
                 else
                     showSearchAlert(SearchActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
 
-                String errorHTML = "<html><body><center>An error occurred: The Internet connection appears to be offline.</center></body></html>";
+                String errorHTML = "<html><body><h1><center>An error occurred: The Internet connection appears to be offline.</center></h1></body></html>";
                 webView.loadData(errorHTML, "text/html", "UTF-8");
                 isPageLoaded = false;
             }
@@ -731,7 +753,13 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
-                String errorHTML = "<html><body><center>An error occurred: The Internet connection appears to be offline.</center></body></html>";
+
+                if(SearchActivity.this.isInternetConnected == false)
+                    showSearchAlert(SearchActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
+                else
+                    showSearchAlert(SearchActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
+
+                String errorHTML = "<html><body><h1><center>An error occurred: The Internet connection appears to be offline.</center></h1></body></html>";
                 acfWebView.loadData(errorHTML, "text/html", "UTF-8");
                 isPageLoaded = false;
             }
