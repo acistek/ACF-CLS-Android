@@ -24,7 +24,7 @@
     <string name="profile_email">Email</string>
     <string name="profile_map">Map/Dirs</string>
     <string name="profile_error">There was a problem retrieving the data.</string>
-    <string name="profile_empty_group_name">Please enter Group Name</string>
+    <string name="profile_empty_group_name">Please enter a Group Name</string>
     <string name="profile_favorite_error">There was a problem. Please try again later.</string>
     <string name="profile_grouplist_cancel">Cancel</string>
     <string name="profile_grouplist_done">Done</string>

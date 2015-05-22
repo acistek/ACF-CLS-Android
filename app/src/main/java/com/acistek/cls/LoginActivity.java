@@ -125,7 +125,7 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    if(s.length() >= 30){
+                    if(s.length() == 30){
                         if(shouldShowAlert){
                             shouldShowAlert = false;
 
@@ -161,7 +161,7 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    if(s.length() >= 30){
+                    if(s.length() == 30){
                         if(shouldShowAlert){
                             shouldShowAlert = false;
 

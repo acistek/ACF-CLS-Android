@@ -686,7 +686,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
 
                                     @Override
                                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        if(s.length() >= 35){
+                                        if(s.length() == 35){
                                             if(shouldShowAlert){
                                                 shouldShowAlert = false;
 
@@ -778,7 +778,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
 
                                     @Override
                                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        if(s.length() >= 35){
+                                        if(s.length() == 35){
                                             if(shouldShowAlert){
                                                 shouldShowAlert = false;
 

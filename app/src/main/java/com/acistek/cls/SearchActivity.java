@@ -325,7 +325,9 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
                         menu.findItem(R.id.building_refresh).setVisible(false);
                     }
                     searchActivityLayout.setVisibility(View.VISIBLE);
+                    clearSearch(editText);
                     searchResultList.setVisibility(View.GONE);
+                    webView.setVisibility(View.VISIBLE);
                     websiteActivityLayout.setVisibility(View.GONE);
                     buildingActivityLayout.setVisibility(View.GONE);
                     break;

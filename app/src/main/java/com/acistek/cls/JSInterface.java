@@ -30,6 +30,7 @@ public class JSInterface {
     public void showAlertMessage(String echo, int success){
         if(success == 1){
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("");
             builder.setMessage(echo);
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
@@ -49,7 +50,7 @@ public class JSInterface {
 
         }
         else{
-            var.showAlert(context, resources.getString(R.string.email_alert), echo);
+            var.showAlert(context, "", echo);
         }
     }
 }
