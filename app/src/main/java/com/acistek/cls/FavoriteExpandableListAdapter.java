@@ -101,7 +101,7 @@ public class FavoriteExpandableListAdapter extends BaseExpandableListAdapter {
         holder.group_name_remove.setText(user.getGroupName());
 
         if(childPosition == FavoriteActivity.childCounter && groupPosition == FavoriteActivity.groupCounter)
-            holder.itemLayout.setBackgroundColor(Color.parseColor("#C8C7CC"));
+            holder.itemLayout.setBackgroundColor(Color.parseColor("#E6E2E2"));
         else if(childPosition % 2 == 0)
             holder.itemLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
         else

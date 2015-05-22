@@ -160,7 +160,8 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
         webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(false);
 
-        emailWebView.addJavascriptInterface(new JSInterface(resources, emailWebView), "JSInterface");
+
+        emailWebView.addJavascriptInterface(new JSInterface(this, resources, emailWebView), "JSInterface");
         emailWebView.loadUrl(this.user_email_url);
     }
 

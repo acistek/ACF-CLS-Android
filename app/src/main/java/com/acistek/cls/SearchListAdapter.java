@@ -43,7 +43,7 @@ public class SearchListAdapter extends ArrayAdapter<UserSearch> {
         TextView userID = (TextView) v.findViewById(R.id.search_list_id);
 
         if(position == SearchActivity.counter)
-            layout.setBackgroundColor(Color.parseColor("#C8C7CC"));
+            layout.setBackgroundColor(Color.parseColor("#E6E2E2"));
         else if(position % 2 == 0)
             layout.setBackgroundColor(Color.parseColor("#FFFFFF"));
         else

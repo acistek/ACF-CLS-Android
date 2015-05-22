@@ -63,9 +63,9 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
     private IntentFilter connFilter;
     private ConnectionStateReceiver csr;
     private TextView actionbarText;
-    private TextView online;
-    private TextView offline;
-    private LayoutInflater inflater;
+//    private TextView online;
+//    private TextView offline;
+//    private LayoutInflater inflater;
 
     private SQLController coopDbController;
 
@@ -116,8 +116,8 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
 
         coopListView = (ListView) findViewById(R.id.coop_list);
         progress = (ProgressBar) findViewById(R.id.progresscoop);
-        online = (TextView) findViewById(R.id.online);
-        offline = (TextView) findViewById(R.id.offline);
+//        online = (TextView) findViewById(R.id.online);
+//        offline = (TextView) findViewById(R.id.offline);
 
         processCOOP();
 
@@ -174,13 +174,13 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
                 processCOOP();
             }
             this.isInternetConnected = true;
-            offline.setTextColor(Color.parseColor("#8AB4CD"));
-            online.setTextColor(Color.parseColor("#ffffff"));
+//            offline.setTextColor(Color.parseColor("#8AB4CD"));
+//            online.setTextColor(Color.parseColor("#ffffff"));
         }
         else{
             this.isInternetConnected = false;
-            online.setTextColor(Color.parseColor("#8AB4CD"));
-            offline.setTextColor(Color.parseColor("#ffffff"));
+//            online.setTextColor(Color.parseColor("#8AB4CD"));
+//            offline.setTextColor(Color.parseColor("#ffffff"));
         }
     }
 

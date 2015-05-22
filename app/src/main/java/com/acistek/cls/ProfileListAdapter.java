@@ -83,7 +83,7 @@ public class ProfileListAdapter extends ArrayAdapter<UserProfile>{
                 holder.infoLayout.setVisibility(View.VISIBLE);
 
             if(position == ProfileActivity.counter){
-                holder.layout.setBackgroundColor(Color.parseColor("#C8C7CC"));
+                holder.layout.setBackgroundColor(Color.parseColor("#E6E2E2"));
             }
             else if(position % 2 == 0){
                 holder.layout.setBackgroundColor(Color.parseColor("#FFFFFF"));

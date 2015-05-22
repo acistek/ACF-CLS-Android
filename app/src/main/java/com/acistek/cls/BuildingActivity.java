@@ -76,6 +76,7 @@ public class BuildingActivity {
     // Hashmap for Building ListView
     ArrayList<HashMap<String, String>> buildingList;
     public int current_seekbar_value;
+    public int current_progress;
 
     GPSTracker gps;
 
@@ -92,15 +93,19 @@ public class BuildingActivity {
         seekBar.setProgress(60);
         seekBar.incrementProgressBy(10);
         seekBar.setMax(60);
+        current_seekbar_value = 3000;
+        current_progress = 60;
 
         final int[] distance_values = {25, 50, 100, 200, 500, 1000, 3000};
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                current_progress = progress;
                 progress = distance_values[progress/10];
                 distance_value = progress;
                 textViewDistance.setText(String.valueOf(progress)+".0 miles");
+                current_seekbar_value = distance_value;
             }
 
             @Override
@@ -118,19 +123,6 @@ public class BuildingActivity {
                 }).start();
             }
         });
-        // create class object
-        gps = new GPSTracker(context);
-        // check if GPS enabled
-        if(gps.canGetLocation()){
-            latitude = gps.getLatitude();
-            longitude = gps.getLongitude();
-        }
-        else{
-            // can't get location
-            // GPS or Network is not enabled
-            // Ask user to enable GPS/network in settings
-            gps.showSettingsAlert();
-        }
 
         building_lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -151,6 +143,26 @@ public class BuildingActivity {
             }
         });
 
+    }
+
+    public void setGPS(){
+        gps = new GPSTracker(context);
+
+        if(gps.canGetLocation()){
+            seekBar.setEnabled(true);
+//            seekBar.setProgress(60);
+//            current_seekbar_value = 3000;
+//            current_progress = 60;
+            latitude = gps.getLatitude();
+            longitude = gps.getLongitude();
+        }
+        else{
+            seekBar.setEnabled(false);
+            seekBar.setProgress(60);
+            current_seekbar_value = 3000;
+            current_progress = 60;
+            gps.showSettingsAlert();
+        }
     }
 
     public void getBuildingInfo(final int distance_control){
@@ -191,6 +203,8 @@ public class BuildingActivity {
                         var.showAlert(context, context.getResources().getString(R.string.alert_error),  context.getResources().getString(R.string.alert_no_internet));
                         seekBar.setEnabled(false);
                         seekBar.setProgress(60);
+                        current_progress = 60;
+                        current_seekbar_value = 3000;
                     }
                 });
             }
@@ -272,7 +286,6 @@ public class BuildingActivity {
                         @Override
                         public void run() {
                             building_lv.setAdapter(adapter);
-                            seekBar.setEnabled(true);
                             SearchActivity.isBuildingLoaded = true;
                         }
                     });

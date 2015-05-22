@@ -23,33 +23,33 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/online_offline_bar"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_weight="90"
-        android:background="#336A90">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/online_offline_bar"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_weight="90"-->
+        <!--android:background="#336A90">-->
 
-        <TextView
-            android:id="@+id/offline"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"
-            android:textColor="#ffffff"
-            android:text="Offline"
-            android:gravity="left|center_vertical"
-            android:paddingLeft="10dp"/>
+        <!--<TextView-->
+            <!--android:id="@+id/offline"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_weight=".5"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:text="Offline"-->
+            <!--android:gravity="left|center_vertical"-->
+            <!--android:paddingLeft="10dp"/>-->
 
-        <TextView
-            android:id="@+id/online"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"
-            android:textColor="#ffffff"
-            android:text="Online"
-            android:gravity="right|center_vertical"
-            android:paddingRight="10dp"/>
+        <!--<TextView-->
+            <!--android:id="@+id/online"-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_weight=".5"-->
+            <!--android:textColor="#ffffff"-->
+            <!--android:text="Online"-->
+            <!--android:gravity="right|center_vertical"-->
+            <!--android:paddingRight="10dp"/>-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 </LinearLayout>

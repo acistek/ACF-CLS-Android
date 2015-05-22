@@ -319,7 +319,24 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
 
                         if(success == 1){
                             if(resultCount == 0){
-                                var.showAlert(FavoriteActivity.this, "", response.getString("message"));
+                                AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+                                builder.setMessage(response.getString("message"));
+                                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        FavoriteActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                FavoriteActivity.this.onBackPressed();
+                                            }
+                                        });
+                                    }
+                                });
+                                AlertDialog dialog = builder.show();
+
+                                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                                messageView.setGravity(Gravity.CENTER);
+
                                 if(favoriteExpandableListAdapter != null){
                                     groupCollection.clear();
                                     groups.clear();
