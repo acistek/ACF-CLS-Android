@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.provider.Settings;
 import android.widget.Toast;
 
 /**
@@ -21,7 +23,7 @@ public class ConnectionStateReceiver extends BroadcastReceiver {
         this.connectionStateListener = (ConnectionStateListener) context;
 
         if(MainApplication.uiInForeground){
-            if (isConnected){
+            if (isConnected && !isAirplaneModeOn(context)){
                 if(this.connectionStateListener != null)
                     this.connectionStateListener.isConnected(true);
             }
@@ -31,5 +33,15 @@ public class ConnectionStateReceiver extends BroadcastReceiver {
             }
         }
 
+    }
+
+    public static boolean isAirplaneModeOn(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return Settings.System.getInt(context.getContentResolver(),
+                    Settings.System.AIRPLANE_MODE_ON, 0) != 0;
+        } else {
+            return Settings.Global.getInt(context.getContentResolver(),
+                    Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        }
     }
 }

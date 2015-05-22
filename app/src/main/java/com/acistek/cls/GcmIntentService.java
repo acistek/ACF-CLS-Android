@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -67,21 +68,26 @@ public class GcmIntentService extends IntentService{
         notification.defaults |= Notification.DEFAULT_VIBRATE;
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        PowerManager pm = (PowerManager) this
+                .getSystemService(Context.POWER_SERVICE);
+
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+        wl.acquire(15000);
+
         manager.notify(R.string.app_name, notification);
 
         MainApplication.notification_count = Integer.parseInt(count);
         if(MainApplication.inSearch && MainApplication.currentActivity != null){
-            Log.e(TAG, "inSearch");
             this.variableChangedListener = (VariableChangedListener) MainApplication.currentActivity;
             this.variableChangedListener.newNotifications();
         }
         else if(MainApplication.inNotifications && MainApplication.currentActivity != null){
-            Log.e(TAG, "inNotif");
             this.variableChangedListener = (VariableChangedListener) MainApplication.currentActivity;
             this.variableChangedListener.newNotifications();
         }
         else{
-            Log.e(TAG, MainApplication.inSearch + "<Search-Notifications>" + MainApplication.inNotifications);
         }
     }
 }
