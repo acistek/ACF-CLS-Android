@@ -21,11 +21,12 @@ import android.widget.TextView;
 public class EmailActivity extends ActionBarActivity implements ConnectionStateListener{
 
     private String toEmail;
+    private String groupName;
     private String mContactListID;
 
     private AppVar var = new AppVar();
     private static final String TAG = "EmailActivity";
-    private String user_email_url = var.cls_link + "/?switchID=android_email_dsp";
+    private String user_email_url = var.cls_link + "/?switchID=email_dsp&android=1";
 
     private TextView actionbarText;
 
@@ -66,11 +67,16 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
         registerReceiver(csr, connFilter);
 
         toEmail = getIntent().getExtras().getString("email");
+        groupName = getIntent().getExtras().getString("groupName");
         mContactListID = session.getContactlistid();
 
         actionbarText.setText("Mail");
 
-        user_email_url = user_email_url + "&contactlistid=" + mContactListID + "&toemail=" + toEmail;
+        if(!toEmail.equalsIgnoreCase(""))
+            user_email_url = user_email_url + "&contactlistid=" + mContactListID + "&toemail=" + toEmail;
+        else
+            user_email_url = user_email_url + "&contactlistid=" + mContactListID + "&groupName=" + groupName;
+
         setUpWebView();
     }
 

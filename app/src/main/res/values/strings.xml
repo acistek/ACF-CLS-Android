@@ -28,6 +28,7 @@
     <string name="profile_favorite_error">There was a problem. Please try again later.</string>
     <string name="profile_grouplist_cancel">Cancel</string>
     <string name="profile_grouplist_done">Done</string>
+    <string name="profile_enter_group">Enter a Group Name</string>
 
     <!-- Email -->
     <string name="action_send_email">Send</string>

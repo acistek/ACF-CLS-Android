@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:maxLength="35"
+        android:hint=""
         android:background="@drawable/login_textfield"/>
 
     <Button

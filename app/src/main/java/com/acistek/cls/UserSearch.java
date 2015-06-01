@@ -10,6 +10,8 @@ public class UserSearch {
     public String lastname;
     public String email;
     public String groupName;
+    public String officePhone;
+    public String cellPhone;
 
     public String getContactlistid() {
         return contactlistid;
@@ -49,5 +51,21 @@ public class UserSearch {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getOfficePhone() {
+        return officePhone;
+    }
+
+    public void setOfficePhone(String officePhone) {
+        this.officePhone = officePhone;
+    }
+
+    public String getCellPhone() {
+        return cellPhone;
+    }
+
+    public void setCellPhone(String cellPhone) {
+        this.cellPhone = cellPhone;
     }
 }

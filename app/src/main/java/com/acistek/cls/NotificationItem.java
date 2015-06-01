@@ -10,6 +10,7 @@ public class NotificationItem {
     public String time_down;
     public String system_url;
     public String responsible;
+    public String description;
 
     public String getSystem_id() {
         return system_id;
@@ -49,5 +50,13 @@ public class NotificationItem {
 
     public void setResponsible(String responsible) {
         this.responsible = responsible;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public void setDescription(String description){
+        this.description = description;
     }
 }

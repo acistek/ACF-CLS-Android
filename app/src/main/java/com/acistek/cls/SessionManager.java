@@ -32,7 +32,7 @@ public class SessionManager {
         editor = pref.edit();
     }
 
-    public void createLoginSession(String username, String clsid, String coopid, String deviceType, String loginUsername){
+    public void createLoginSession(String username, String clsid, String coopid, String deviceType, String loginUsername, String deviceID){
         Date today = new Date();
         Calendar cal = new GregorianCalendar();
         cal.setTime(today);
@@ -46,6 +46,7 @@ public class SessionManager {
         editor.putString("expire_date", today60.toString());
         editor.putString("devicetype", deviceType);
         editor.putString("loginusername", loginUsername);
+        editor.putString("deviceidentifier", deviceID);
 
         editor.commit();
     }
@@ -53,6 +54,11 @@ public class SessionManager {
     public void setRegistrationID(String regID, int appVersion){
         editor.putString("regid", regID);
         editor.putInt("appVersion", appVersion);
+        editor.commit();
+    }
+
+    public void setUUID(String uuid){
+        editor.putString("uuid", uuid);
         editor.commit();
     }
 
@@ -66,6 +72,14 @@ public class SessionManager {
 
     public String getDeviceType(){
         return pref.getString("devicetype", null);
+    }
+
+    public String getDeviceID(){
+        return pref.getString("deviceidentifier", null);
+    }
+
+    public String getUUID(){
+        return pref.getString("uuid", null);
     }
 
     public String getRegistrationID(){
@@ -82,7 +96,7 @@ public class SessionManager {
 
     public void logoutUser(){
         GcmClient gcmClient = new GcmClient(_context, null);
-        gcmClient.unregisterInBackground(getLoginUsername(), getDeviceType(), "0");
+        gcmClient.unregisterInBackground(getLoginUsername(), getDeviceType(), getDeviceID(), "0");
 
         editor.clear();
         editor.commit();
@@ -91,6 +105,11 @@ public class SessionManager {
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         _context.startActivity(i);
+    }
+
+    public void clearSession(){
+        editor.clear();
+        editor.commit();
     }
 
     public void checkLogin(){

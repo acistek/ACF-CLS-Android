@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -266,8 +267,9 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
         String domainSelect = (hhsButton.isChecked() ? "ITSC":"external");
         String acfcode = var.acfcode;
 //        String deviceToken = session.getRegistrationID();
+        final String deviceID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         final String deviceType = getDeviceName();
-        final String URL = var.cls_link + "/json/android_login_act.cfm";
+        final String URL = var.cls_link + "/json/login_act.cfm?android=1";
 
         if(username.trim().equalsIgnoreCase("") || password.trim().equalsIgnoreCase("")){
             var.showAlert(this, resources.getString(R.string.alert_sign_in), resources.getString(R.string.alert_sign_in_no_user));
@@ -312,14 +314,14 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                     try {
                         JSONObject response = new JSONObject(responseString);
                         if(response.getInt("success") == 1){
-                            session.createLoginSession(response.getString("userName"), response.getString("contactListID"), response.getString("coopID"), deviceType, username);
+                            session.createLoginSession(response.getString("userName"), response.getString("contactListID"), response.getString("coopID"), deviceType, username, deviceID);
 
                             if (gcmClient.checkPlayServices()) {
                                 gcmClient.gcm = GoogleCloudMessaging.getInstance(LoginActivity.this);
                                 gcmClient.regid = gcmClient.getRegistrationId(getApplicationContext());
 
                                 if (gcmClient.regid.isEmpty()) {
-                                    gcmClient.registerInBackground(username, deviceType);
+                                    gcmClient.registerInBackground(username, deviceType, deviceID);
                                 }
                             } else {
                                 Log.i(TAG, "No valid Google Play Services APK found.");
@@ -330,6 +332,7 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             LoginActivity.this.startActivity(i);
                             LoginActivity.this.finish();
+
                         }
                         else{
                             var.showAlert(LoginActivity.this, resources.getString(R.string.alert_sign_in), response.getString("error_message"));

@@ -42,7 +42,7 @@ public class NotificationActivity extends ActionBarActivity implements Connectio
 
     private AppVar var = new AppVar();
     private static final String TAG = "NotificationActivity";
-    private final String notification_url = var.cls_link + "/json/dms_dsp.cfm?acfcode=" + var.acfcode;
+    private final String notification_url = var.cls_link + "/json/dms_dsp.cfm";
 
     private boolean isInternetConnected = true;
     private boolean isPageLoaded = false;
@@ -169,7 +169,7 @@ public class NotificationActivity extends ActionBarActivity implements Connectio
     }
 
     public void processNotifications(){
-        final String get_notifications = notification_url;
+        final String get_notifications = notification_url + "?deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.post(get_notifications, new TextHttpResponseHandler() {
@@ -235,9 +235,10 @@ public class NotificationActivity extends ActionBarActivity implements Connectio
                             NotificationItem note = new NotificationItem();
                             note.setSystem_id(jsonItem.getString("systemID"));
                             note.setSystem_name(jsonItem.getString("systemName"));
-                            note.setTime_down(jsonItem.getString("timeDown"));
+//                            note.setTime_down(jsonItem.getString("timeDown"));
+                            note.setDescription(jsonItem.getString("description"));
                             note.setSystem_url(jsonItem.getString("systemURL"));
-                            note.setResponsible(jsonItem.getString("responsible"));
+//                            note.setResponsible(jsonItem.getString("responsible"));
 
                             notificationArray.add(note);
                         }
