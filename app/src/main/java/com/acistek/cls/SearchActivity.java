@@ -179,7 +179,7 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
 
         setUpListeners();
         setUpWebSite();
-        buildingActivity = new BuildingActivity(this);
+        buildingActivity = new BuildingActivity(this, this.session);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -495,7 +495,7 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
             Log.e(TAG, "Failed to encode search term");
         }
 
-        String search_url = user_search_url + "?term=" + term + "&acfcode=" + acfcode + "&from=" + fromRow + "&to=" + toRow;
+        String search_url = user_search_url + "?term=" + term + "&acfcode=" + acfcode + "&from=" + fromRow + "&to=" + toRow + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.post(search_url, new TextHttpResponseHandler(){

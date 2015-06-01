@@ -6,12 +6,18 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -26,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +41,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +58,7 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
 
     private AppVar var = new AppVar();
     private static final String TAG = "FavoriteActivity";
-    private final String favorites_url = var.cls_link + "/json/android_favorite_act.cfm";
+    private final String favorites_url = var.cls_link + "/json/favorite_dsp.cfm";
 
     private ExpandableListView favoriteExpandableList;
     private FavoriteExpandableListAdapter favoriteExpandableListAdapter;
@@ -235,6 +245,7 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
     @Override
     public void onResume(){
         super.onResume();
+        processFavorites();
     }
 
     @Override
@@ -266,143 +277,58 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
     }
 
     public void processFavorites(){
-        String acfcode = var.acfcode;
         String userID = session.getContactlistid();
-        String action = "view";
         groupCounter = -1;
         childCounter = -1;
 
-        try {
-            userID = URLEncoder.encode(userID, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            userID = "0";
-            Log.e(TAG, "Failed to encode ids");
-        }
+        final String get_favorites = favorites_url + "?contactlistid=" + userID + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
+        AsyncHttpClient client = new AsyncHttpClient();
 
-        if(!userID.equalsIgnoreCase("0")){
-            final String get_favorites = favorites_url + "?contactlistid=" + userID + "&acfcode=" + acfcode + "&action=" + action;
-            AsyncHttpClient client = new AsyncHttpClient();
+        client.post(get_favorites, new TextHttpResponseHandler() {
 
-            client.post(get_favorites, new TextHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                progress.setVisibility(View.VISIBLE);
+                favoriteExpandableList.setVisibility(View.VISIBLE);
+                favoriteErr.setVisibility(View.GONE);
+            }
 
-                @Override
-                public void onStart() {
-                    progress.setVisibility(View.VISIBLE);
-                    favoriteExpandableList.setVisibility(View.VISIBLE);
-                    favoriteErr.setVisibility(View.GONE);
+            @Override
+            public void onFinish() {
+                progress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                if(!FavoriteActivity.this.isFinishing()){
+                    if(FavoriteActivity.this.isInternetConnected == false)
+                        var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
+                    else
+                        var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
                 }
+                isPageLoaded = false;
+                favoriteExpandableList.setVisibility(View.GONE);
+                favoriteErr.setVisibility(View.VISIBLE);
+            }
 
-                @Override
-                public void onFinish() {
-                    progress.setVisibility(View.GONE);
-                }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                try {
+                    JSONObject response = new JSONObject(responseString);
+                    int resultCount = response.getInt("resultCount");
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if(!FavoriteActivity.this.isFinishing()){
-                        if(FavoriteActivity.this.isInternetConnected == false)
-                            var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
-                        else
-                            var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
-                    }
-                    isPageLoaded = false;
+                    FavoriteActivity.this.listFavorites(response, resultCount);
+                    isPageLoaded = true;
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "Problem retrieving Favorites.");
+                    var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
                     favoriteExpandableList.setVisibility(View.GONE);
                     favoriteErr.setVisibility(View.VISIBLE);
+                    isPageLoaded = false;
                 }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        JSONObject response = new JSONObject(responseString);
-                        int success = response.getInt("success");
-                        int resultCount = response.getInt("resultCount");
-
-                        if(success == 1){
-                            if(resultCount == 0){
-                                AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
-                                builder.setMessage(response.getString("message"));
-                                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FavoriteActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                FavoriteActivity.this.onBackPressed();
-                                            }
-                                        });
-                                    }
-                                });
-                                AlertDialog dialog = builder.show();
-
-                                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                                messageView.setGravity(Gravity.CENTER);
-
-                                if(favoriteExpandableListAdapter != null){
-                                    groupCollection.clear();
-                                    groups.clear();
-                                    favoriteExpandableListAdapter.notifyDataSetChanged();
-                                }
-                                menu.findItem(R.id.action_edit_favorite).setVisible(true);
-                                menu.findItem(R.id.action_edit_favorite).setEnabled(false);
-                                menu.findItem(R.id.action_done_favorite).setVisible(false);
-                            }
-                            else {
-                                JSONArray groupList = response.getJSONArray("groups");
-                                JSONArray groupListItems = response.getJSONArray("results");
-
-                                groups = new ArrayList<String>();
-                                groupItems = new ArrayList<UserSearch>();
-
-                                for (int i = 0; i < groupList.length(); i++) {
-                                    JSONObject jsonGroupItem = groupList.getJSONObject(i);
-                                    String name = jsonGroupItem.getString("groupName");
-                                    groups.add(name);
-                                }
-
-                                for (int i = 0; i < groupListItems.length(); i++) {
-                                    JSONObject jsonItem = groupListItems.getJSONObject(i);
-
-                                    UserSearch user = new UserSearch();
-                                    user.setFirstname(jsonItem.getString("firstname"));
-                                    user.setLastname(jsonItem.getString("lastname"));
-                                    user.setContactlistid(jsonItem.getString("contactlistid"));
-                                    user.setEmail(jsonItem.getString("emailaddress"));
-                                    user.setGroupName(jsonItem.getString("groupName"));
-
-                                    groupItems.add(user);
-                                }
-
-                                FavoriteActivity.this.createCollection();
-
-                                favoriteExpandableListAdapter = new FavoriteExpandableListAdapter(FavoriteActivity.this, groups, groupCollection);
-                                favoriteExpandableList.setAdapter(favoriteExpandableListAdapter);
-
-                                int gcount = favoriteExpandableListAdapter.getGroupCount();
-                                for(int i = 1; i <= gcount; i++)
-                                    favoriteExpandableList.expandGroup(i - 1);
-                            }
-                        }
-                        else{
-                            var.showAlert(FavoriteActivity.this, "", response.getString("error_message"));
-                            favoriteExpandableList.setVisibility(View.GONE);
-                            favoriteErr.setVisibility(View.VISIBLE);
-                        }
-                        isPageLoaded = true;
-
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Problem retrieving Favorites.");
-                        var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
-                        favoriteExpandableList.setVisibility(View.GONE);
-                        favoriteErr.setVisibility(View.VISIBLE);
-                        isPageLoaded = false;
-                    }
-                }
-            });
-        }
-        else{
-            var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
-            isPageLoaded = false;
-        }
+            }
+        });
     }
 
     public void createCollection(){
@@ -425,25 +351,19 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
         TextView favTextView = (TextView) v.findViewById(R.id.favorite_user_id_remove);
         TextView gnameTextView = (TextView) v.findViewById(R.id.favorite_group_name_remove);
 
-        String acfcode = var.acfcode;
         String userID = session.getContactlistid();
-        String action = "del";
         String favID = favTextView.getText().toString();
         String group_name = gnameTextView.getText().toString();
 
         try {
-            userID = URLEncoder.encode(userID, "UTF-8");
-            favID = URLEncoder.encode(favID, "UTF-8");
             group_name = URLEncoder.encode(group_name, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            userID = "0";
-            favID = "0";
             group_name = "";
             Log.e(TAG, "Failed to encode ids");
         }
 
-        if(!userID.equalsIgnoreCase("0") && !favID.equalsIgnoreCase("0")){
-            final String favorite_del_user = favorites_url + "?contactlistid=" + userID + "&acfcode=" + acfcode + "&favoriteid=" + favID + "&action=" + action + "&group=" + group_name;
+        if(!group_name.equalsIgnoreCase("")){
+            final String favorite_del_user = favorites_url + "?contactlistid=" + userID + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID() + "&userContactListID=" + favID + "&groupName=" + group_name;
             AsyncHttpClient client = new AsyncHttpClient();
 
             client.post(favorite_del_user, new TextHttpResponseHandler() {
@@ -461,28 +381,12 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     try {
                         JSONObject response = new JSONObject(responseString);
-                        int success = response.getInt("success");
+                        int resultCount = response.getInt("resultCount");
 
-                        if(success == 1){
-                            AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
-                            builder.setMessage(response.getString("message"));
-                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    FavoriteActivity.this.processFavorites();
-                                }
-                            });
-                            AlertDialog dialog = builder.show();
-
-                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                            messageView.setGravity(Gravity.CENTER);
-                        }
-                        else{
-                            var.showAlert(FavoriteActivity.this, "", response.getString("error_message"));
-                        }
+                        FavoriteActivity.this.listFavorites(response, resultCount);
 
                     } catch (JSONException e) {
-                        Log.e(TAG, "Problem adding user.");
+                        Log.e(TAG, "Problem deleting user.");
                         var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
                     }
                 }
@@ -491,5 +395,347 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
         else{
             var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
         }
+    }
+
+    public void listFavorites(JSONObject response, int resultCount) throws JSONException{
+        if(resultCount == 0){
+            AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+            builder.setMessage(response.getString("message"));
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    FavoriteActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            FavoriteActivity.this.onBackPressed();
+                        }
+                    });
+                }
+            });
+            AlertDialog dialog = builder.show();
+
+            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
+
+            if(favoriteExpandableListAdapter != null){
+                groupCollection.clear();
+                groups.clear();
+                favoriteExpandableListAdapter.notifyDataSetChanged();
+            }
+            menu.findItem(R.id.action_edit_favorite).setVisible(true);
+            menu.findItem(R.id.action_edit_favorite).setEnabled(false);
+            menu.findItem(R.id.action_done_favorite).setVisible(false);
+        }
+        else {
+            JSONArray groupListItems = response.getJSONArray("results");
+
+            groups = new ArrayList<String>();
+            groupItems = new ArrayList<UserSearch>();
+
+            for (int i = 0; i < groupListItems.length(); i++) {
+                JSONObject jsonItem = groupListItems.getJSONObject(i);
+                String gname = jsonItem.getString("groupName");
+
+                UserSearch user = new UserSearch();
+                user.setFirstname(jsonItem.getString("firstName"));
+                user.setLastname(jsonItem.getString("lastName"));
+                user.setContactlistid(jsonItem.getString("contactListID"));
+                user.setEmail(jsonItem.getString("emailAddress"));
+                user.setGroupName(gname);
+                user.setCellPhone(jsonItem.getString("cellPhone"));
+                user.setOfficePhone(jsonItem.getString("officePhone"));
+
+                if(!groups.contains(gname))
+                    groups.add(gname);
+
+                groupItems.add(user);
+            }
+
+            FavoriteActivity.this.createCollection();
+
+            favoriteExpandableListAdapter = new FavoriteExpandableListAdapter(FavoriteActivity.this, groups, groupCollection);
+            favoriteExpandableList.setAdapter(favoriteExpandableListAdapter);
+
+            int gcount = favoriteExpandableListAdapter.getGroupCount();
+            for(int i = 1; i <= gcount; i++)
+                favoriteExpandableList.expandGroup(i - 1);
+        }
+    }
+
+    public void editGroupName(View v){
+        TextView group = (TextView) v.findViewById(R.id.favorite_group_edit_name);
+        final String groupName = group.getText().toString();
+
+        final String groupCharacterSet = "\'1234567890-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        final InputFilter groupFilter = new InputFilter() {
+            boolean shouldShowAlert = true;
+
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                boolean keepOriginal = true;
+                StringBuilder sb = new StringBuilder(end - start);
+                for (int i = start; i < end; i++) {
+                    char c = source.charAt(i);
+                    if (isCharAllowed(c)) // put your condition here
+                        sb.append(c);
+                    else
+                        keepOriginal = false;
+                }
+                if (keepOriginal)
+                    return null;
+                else {
+                    if(shouldShowAlert){
+                        shouldShowAlert = false;
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+                        builder.setMessage("The Group Name must be in letters, numbers, hyphens, single quotes, and spaces only.");
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                shouldShowAlert = true;
+                            }
+                        });
+                        AlertDialog dialog = builder.show();
+
+                        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                        messageView.setGravity(Gravity.CENTER);
+
+                    }
+
+
+                    if (source instanceof Spanned) {
+                        SpannableString sp = new SpannableString(sb);
+                        TextUtils.copySpansFrom((Spanned) source, start, sb.length(), null, sp, 0);
+                        return sp;
+                    } else {
+                        return sb;
+                    }
+                }
+            }
+
+            private boolean isCharAllowed(char c) {
+                return Character.isLetterOrDigit(c) || Character.isSpaceChar(c) || groupCharacterSet.contains("" + c);
+            }
+        };
+
+        LinearLayout glayout = new LinearLayout(FavoriteActivity.this);
+        glayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(20, 20, 20, 20);
+
+        final EditText gname = new EditText(FavoriteActivity.this);
+        gname.setBackgroundDrawable(resources.getDrawable(R.drawable.login_textfield));
+        gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
+        gname.setHint("Edit Group Name");
+
+        gname.addTextChangedListener(new TextWatcher() {
+            boolean shouldShowAlert = true;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if(s.length() == 35){
+                    if(shouldShowAlert){
+                        shouldShowAlert = false;
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+                        builder.setMessage("The Group Name must be less than 35 characters.");
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                shouldShowAlert = true;
+                            }
+                        });
+                        AlertDialog dialog = builder.show();
+
+                        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                        messageView.setGravity(Gravity.CENTER);
+                    }
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        glayout.addView(gname, params);
+
+        final AlertDialog d = new AlertDialog.Builder(FavoriteActivity.this)
+                .setMessage("Edit Group Name")
+                .setView(glayout)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        d.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (gname.getText().toString().trim().equalsIgnoreCase("")) {
+                            var.showAlert(FavoriteActivity.this, "", "Please enter a Group Name");
+                            gname.setText("");
+                        } else {
+
+                            String userID = session.getContactlistid();
+                            String oldGroupName = groupName;
+                            String newGroupName = gname.getText().toString();
+                            String deviceID = session.getDeviceID();
+                            String deviceUUID = session.getUUID();
+                            String edit_url = var.cls_link + "/json/favorite_group_act.cfm?android=1";
+
+                            JSONObject sendJSON = new JSONObject();
+                            try{
+                                sendJSON.put("contactListID", userID);
+                                sendJSON.put("oldGroupName", oldGroupName);
+                                sendJSON.put("newGroupName", newGroupName);
+                                sendJSON.put("deviceIdentifier", deviceID);
+                                sendJSON.put("loginUUID", deviceUUID);
+                            } catch (JSONException e) {
+                                Log.e(TAG, "Error creating JSON Object");
+                            }
+
+                            AsyncHttpClient client = new AsyncHttpClient();
+                            StringEntity se = null;
+
+                            try {
+                                se = new StringEntity(sendJSON.toString());
+                            } catch (UnsupportedEncodingException e){
+                                Log.e(TAG, "Error setting string entity.");
+                            }
+
+                            se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+
+                            client.post(null, edit_url, se, "application/json", new TextHttpResponseHandler() {
+                                @Override
+                                public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                                    if(!FavoriteActivity.this.isFinishing()) {
+                                        if (FavoriteActivity.this.isInternetConnected == false)
+                                            var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
+                                        else
+                                            var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
+                                    }
+                                }
+
+                                @Override
+                                public void onSuccess(int i, Header[] headers, String s) {
+                                    try {
+                                        JSONObject response = new JSONObject(s);
+                                        String message = response.getString("message");
+
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+                                        builder.setMessage(message);
+                                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                FavoriteActivity.this.processFavorites();
+                                            }
+                                        });
+                                        AlertDialog dialog = builder.show();
+
+                                        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                                        messageView.setGravity(Gravity.CENTER);
+
+                                    } catch (JSONException e) {
+                                        Log.e(TAG, "Problem adding user.");
+                                        var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
+                                    }
+                                }
+                            });
+
+                            d.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
+        d.show();
+
+        TextView messageView = (TextView) d.findViewById(android.R.id.message);
+        messageView.setGravity(Gravity.CENTER);
+        messageView.setTypeface(null, Typeface.BOLD);
+
+    }
+
+    public void mailGroupName(View v){
+        TextView group = (TextView) v.findViewById(R.id.favorite_group_mail_name);
+        final String groupName = group.getText().toString();
+
+        Intent i = new Intent(FavoriteActivity.this, EmailActivity.class);
+        i.putExtra("email", "");
+        i.putExtra("groupName", groupName);
+        this.startActivity(i);
+    }
+
+    public void deleteGroupName(View v){
+        TextView group = (TextView) v.findViewById(R.id.favorite_group_delete_name);
+        final String groupName = group.getText().toString();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+        builder.setMessage("Are you sure you want to delete the \"" + groupName + "\" group?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String userID = session.getContactlistid();
+                String group_name = groupName;
+                int deleteGroup = 1;
+
+                try {
+                    group_name = URLEncoder.encode(group_name, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    group_name = "";
+                    Log.e(TAG, "Failed to encode ids");
+                }
+
+                if (!group_name.equalsIgnoreCase("")) {
+                    final String favorite_del_user = favorites_url + "?contactlistid=" + userID + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID() + "&deleteGroup=" + deleteGroup + "&groupName=" + group_name;
+                    AsyncHttpClient client = new AsyncHttpClient();
+
+                    client.post(favorite_del_user, new TextHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            if (!FavoriteActivity.this.isFinishing()) {
+                                if (FavoriteActivity.this.isInternetConnected == false)
+                                    var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
+                                else
+                                    var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                            try {
+                                JSONObject response = new JSONObject(responseString);
+                                int resultCount = response.getInt("resultCount");
+
+                                FavoriteActivity.this.listFavorites(response, resultCount);
+
+                            } catch (JSONException e) {
+                                Log.e(TAG, "Problem deleting user.");
+                                var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
+                            }
+                        }
+                    });
+                } else {
+                    var.showAlert(FavoriteActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
+                }
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        AlertDialog dialog = builder.show();
+
+        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+        messageView.setGravity(Gravity.CENTER);
     }
 }

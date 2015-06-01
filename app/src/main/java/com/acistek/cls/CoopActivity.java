@@ -196,7 +196,7 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
         }
 
         if(!userID.equalsIgnoreCase("0")){
-            final String get_coop = coop_url + "?contactlistid=" + userID + "&acfcode=" + acfcode;
+            final String get_coop = coop_url + "?contactlistid=" + userID + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
             AsyncHttpClient client = new AsyncHttpClient();
             client.post(get_coop, new TextHttpResponseHandler() {
 

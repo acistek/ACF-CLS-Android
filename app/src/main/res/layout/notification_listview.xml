@@ -26,18 +26,24 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_weight=".10">
+            <!--<TextView-->
+                <!--android:id="@+id/notification_time_down"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:gravity="bottom"-->
+                <!--android:textColor="#000000"-->
+                <!--android:textStyle="normal" />-->
+            <!--<TextView-->
+                <!--android:id="@+id/notification_responsible"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:gravity="top"-->
+                <!--android:textColor="#000000"-->
+                <!--android:textStyle="normal" />-->
             <TextView
-                android:id="@+id/notification_time_down"
+                android:id="@+id/notification_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="bottom"
-                android:textColor="#000000"
-                android:textStyle="normal" />
-            <TextView
-                android:id="@+id/notification_responsible"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="top"
                 android:textColor="#000000"
                 android:textStyle="normal" />
             <TextView

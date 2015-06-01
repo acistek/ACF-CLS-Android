@@ -79,6 +79,8 @@ public class ProfileListAdapter extends ArrayAdapter<UserProfile>{
 
             if(user.getTitle().equalsIgnoreCase("contactlistid"))
                 holder.infoLayout.setVisibility(View.INVISIBLE);
+            else if(user.getTitle().equalsIgnoreCase("grouplist"))
+                holder.infoLayout.setVisibility(View.GONE);
             else
                 holder.infoLayout.setVisibility(View.VISIBLE);
 

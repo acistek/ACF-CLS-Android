@@ -46,7 +46,7 @@ public class BuildingActivity {
 
     private AppVar var = new AppVar();
     private static final String TAG = "BuildingActivity";
-    private final String building_url = var.cls_link + "/json/building_dsp.cfm?acfcode=" + var.acfcode ;
+    private final String building_url = var.cls_link + "/json/building_dsp.cfm";
     private final Activity context;
 
     private Menu optionsMenu;
@@ -79,9 +79,11 @@ public class BuildingActivity {
     public int current_progress;
 
     GPSTracker gps;
+    SessionManager session;
 
-    public BuildingActivity(Activity context){
+    public BuildingActivity(Activity context, SessionManager session){
         this.context = context;
+        this.session = session;
 
         buildingList = new ArrayList<HashMap<String, String>>();
 
@@ -167,7 +169,7 @@ public class BuildingActivity {
 
     public void getBuildingInfo(final int distance_control){
 
-        final String get_building = building_url;
+        final String get_building = building_url + "?deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
         AsyncHttpClient client = new SyncHttpClient();
 
         client.post(get_building, new TextHttpResponseHandler() {
