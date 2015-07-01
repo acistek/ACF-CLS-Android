@@ -126,6 +126,11 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if(s.length() == 30){
                         if(shouldShowAlert){
                             shouldShowAlert = false;
@@ -144,11 +149,6 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                             messageView.setGravity(Gravity.CENTER);
                         }
                     }
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 }
 
                 @Override
@@ -162,6 +162,11 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if(s.length() == 30){
                         if(shouldShowAlert){
                             shouldShowAlert = false;
@@ -180,11 +185,6 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                             messageView.setGravity(Gravity.CENTER);
                         }
                     }
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                 }
 
                 @Override

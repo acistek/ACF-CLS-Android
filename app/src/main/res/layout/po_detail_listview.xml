@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/po_detail_layout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/po_detail_header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:orientation="vertical"
+        android:background="#CFC3AE"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/po_detail_big_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/po_detail_subheader_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:orientation="vertical"
+        android:background="#DEE5DE"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/po_detail_small_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/po_detail_division_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:orientation="vertical"
+        android:background="#AAAAAA"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/po_detail_division_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/po_detail_user_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:layout_weight=".10"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/po_detail_username"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".80"
+                android:gravity="bottom"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/po_detail_days"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="top"
+                android:textSize="12sp"
+                android:textColor="#000000"
+                android:textStyle="normal" />
+            <TextView
+                android:id="@+id/po_detail_contactlistid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:singleLine="true"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/po_detail_right_arrow"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".80"
+            android:scaleType="center"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/right_arrow"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -93,17 +93,49 @@
             android:configChanges="orientation"
             android:label="@string/title_activity_webview"
             android:parentActivityName=".NotificationActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
+
         <receiver
             android:name=".GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
+
                 <!-- Receives the actual messages. -->
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </receiver>
+
         <service android:name=".GcmIntentService" />
+
+        <activity
+            android:name=".AcfWebActivity"
+            android:label="@string/title_activity_acf_web"
+            android:parentActivityName=".SearchActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".BuildingInfoActivity"
+            android:label="@string/title_activity_building_info"
+            android:parentActivityName=".SearchActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".StaffNotRespPOActivity"
+            android:label="@string/title_activity_staff_not_resp_po"
+            android:parentActivityName=".SearchActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".StaffNotRespUsersActivity"
+            android:label="@string/title_activity_staff_not_resp_users"
+            android:parentActivityName=".StaffNotRespPOActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

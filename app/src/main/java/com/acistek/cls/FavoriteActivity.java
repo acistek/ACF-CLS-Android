@@ -9,6 +9,8 @@ import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -527,13 +530,18 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
         final EditText gname = new EditText(FavoriteActivity.this);
         gname.setBackgroundDrawable(resources.getDrawable(R.drawable.login_textfield));
         gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
-        gname.setHint("Edit Group Name");
+        gname.setText(groupName);
 
         gname.addTextChangedListener(new TextWatcher() {
             boolean shouldShowAlert = true;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.length() == 35){
                     if(shouldShowAlert){
                         shouldShowAlert = false;
@@ -552,11 +560,6 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
                         messageView.setGravity(Gravity.CENTER);
                     }
                 }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -630,20 +633,21 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
                                 public void onSuccess(int i, Header[] headers, String s) {
                                     try {
                                         JSONObject response = new JSONObject(s);
+                                        int error = response.getInt("isError");
                                         String message = response.getString("message");
 
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
-                                        builder.setMessage(message);
-                                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                FavoriteActivity.this.processFavorites();
-                                            }
-                                        });
-                                        AlertDialog dialog = builder.show();
+                                        if(error == 0){
+                                            FavoriteActivity.this.processFavorites();
+                                        }
+                                        else{
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(FavoriteActivity.this);
+                                            builder.setMessage(message);
+                                            builder.setPositiveButton(android.R.string.ok, null);
+                                            AlertDialog dialog = builder.show();
 
-                                        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                                        messageView.setGravity(Gravity.CENTER);
+                                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                                            messageView.setGravity(Gravity.CENTER);
+                                        }
 
                                     } catch (JSONException e) {
                                         Log.e(TAG, "Problem adding user.");
@@ -665,6 +669,14 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
         messageView.setGravity(Gravity.CENTER);
         messageView.setTypeface(null, Typeface.BOLD);
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                gname.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN , 0, 0, 0));
+                gname.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP , 0, 0, 0));
+                gname.setSelection(gname.getText().length());
+            }
+        }, 100);
     }
 
     public void mailGroupName(View v){
