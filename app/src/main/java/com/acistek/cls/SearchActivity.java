@@ -83,7 +83,7 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
 
     private AppVar var = new AppVar();
     private static final String TAG = "SearchActivity";
-    private final String graph_url = var.cls_link + "/?switchID=staffGraph_dsp";
+    private final String graph_url = var.cls_link + "/?switchID=staffGraph_dsp&android=1";
     private final String user_search_url = var.cls_link + "/json/search_dsp.cfm";
     private ArrayList<UserSearch> userSearchArrayList = new ArrayList<UserSearch>();
     private SearchListAdapter searchListAdapter;
@@ -99,26 +99,10 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
     private Drawable clearEditTextDrawable;
     private Menu menu;
 
-    // Menu Options
-    private LinearLayout searchActivityLayout;
-    private LinearLayout websiteActivityLayout;
-    private LinearLayout buildingActivityLayout;
-
-    private BuildingActivity buildingActivity;
-
-    // ACF website variables
-    private WebView acfWebView;
-    private ProgressBar acfProgress;
-    private ImageButton acf_back_button;
-    private ImageButton acf_refresh_button;
-    private ImageButton acf_forward_button;
-    private String acf_url = var.acf_link;
-
     SessionManager session;
     Resources resources;
 
     static int counter = -1;
-    static boolean isBuildingLoaded = false;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -128,8 +112,8 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
-    private CharSequence mTitle;
-    private int mPosition;
+//    private CharSequence mTitle;
+//    private int mPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,10 +139,6 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
         searchAlertImage = (ImageView) findViewById(R.id.search_alert_image);
         badge = new BadgeView(this, searchAlertImage);
 
-        searchActivityLayout = (LinearLayout) findViewById(R.id.search_activity);
-        websiteActivityLayout = (LinearLayout) findViewById(R.id.website_activity);
-        buildingActivityLayout = (LinearLayout) findViewById(R.id.building_activity);
-
         connFilter = new IntentFilter();
         connFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         csr = new ConnectionStateReceiver();
@@ -178,12 +158,10 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
         var.outOfFocus(editText, this);
 
         setUpListeners();
-        setUpWebSite();
-        buildingActivity = new BuildingActivity(this, this.session);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
-        mPosition = 2;
+//        mTitle = getTitle();
+//        mPosition = 2;
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -259,33 +237,22 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
     public void onSectionAttached(int number) {
         switch (number) {
             case 2:
-                mTitle = getString(R.string.title_section1);
-                mPosition = number;
+//                mTitle = getString(R.string.title_section1);
+//                mPosition = number;
                 webView.loadUrl(this.graph_url);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section2);
-                mPosition = number;
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        SearchActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                buildingActivity.setGPS();
-                            }
-                        });
-
-                        buildingActivity.seekBar.setProgress(buildingActivity.current_progress);
-                        buildingActivity.getBuildingInfo(buildingActivity.current_seekbar_value);
-                    }
-                }).start();
+//                mTitle = getString(R.string.title_section2);
+//                mPosition = number;
+                Intent i = new Intent(SearchActivity.this, BuildingInfoActivity.class);
+                this.startActivity(i);
 
                 break;
             case 4:
-                mTitle = getString(R.string.title_section3);
-                mPosition = number;
-                acfWebView.loadUrl(acf_url);
+//                mTitle = getString(R.string.title_section3);
+//                mPosition = number;
+                Intent ii = new Intent(SearchActivity.this, AcfWebActivity.class);
+                this.startActivity(ii);
                 break;
             default:
                 break;
@@ -296,7 +263,7 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionbarText.setText(mTitle);
+        actionbarText.setText(getString(R.string.title_section1));
     }
 
 
@@ -312,43 +279,13 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
             this.menu = menu;
             restoreActionBar();
 
-            switch (mPosition) {
-                case 2:
-                    if(session.getCoopid().equalsIgnoreCase("0")){
-                        menu.findItem(R.id.action_coop).setVisible(false);
-                        menu.findItem(R.id.search_blank_ac).setVisible(true);
-                        menu.findItem(R.id.building_refresh).setVisible(false);
-                    }
-                    else {
-                        menu.findItem(R.id.action_coop).setVisible(true);
-                        menu.findItem(R.id.search_blank_ac).setVisible(false);
-                        menu.findItem(R.id.building_refresh).setVisible(false);
-                    }
-                    searchActivityLayout.setVisibility(View.VISIBLE);
-                    clearSearch(editText);
-                    searchResultList.setVisibility(View.GONE);
-                    webView.setVisibility(View.VISIBLE);
-                    websiteActivityLayout.setVisibility(View.GONE);
-                    buildingActivityLayout.setVisibility(View.GONE);
-                    break;
-                case 3:
-                    menu.findItem(R.id.action_coop).setVisible(false);
-                    menu.findItem(R.id.search_blank_ac).setVisible(false);
-                    menu.findItem(R.id.building_refresh).setVisible(true);
-                    searchActivityLayout.setVisibility(View.GONE);
-                    websiteActivityLayout.setVisibility(View.GONE);
-                    buildingActivityLayout.setVisibility(View.VISIBLE);
-                    break;
-                case 4:
-                    menu.findItem(R.id.action_coop).setVisible(false);
-                    menu.findItem(R.id.search_blank_ac).setVisible(true);
-                    menu.findItem(R.id.building_refresh).setVisible(false);
-                    searchActivityLayout.setVisibility(View.GONE);
-                    websiteActivityLayout.setVisibility(View.VISIBLE);
-                    buildingActivityLayout.setVisibility(View.GONE);
-                    break;
-                default:
-                    break;
+            if(session.getCoopid().equalsIgnoreCase("0")){
+                menu.findItem(R.id.action_coop).setVisible(false);
+                menu.findItem(R.id.search_blank_ac).setVisible(true);
+            }
+            else {
+                menu.findItem(R.id.action_coop).setVisible(true);
+                menu.findItem(R.id.search_blank_ac).setVisible(false);
             }
 
             return true;
@@ -369,30 +306,6 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
             this.startActivity(i);
             return true;
         }
-        else if(id == R.id.building_refresh)  {
-            menu.findItem(R.id.building_refresh).setEnabled(false);
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    SearchActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            buildingActivity.setGPS();
-                        }
-                    });
-                    buildingActivity.getBuildingInfo(buildingActivity.current_seekbar_value);
-                    SearchActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            menu.findItem(R.id.building_refresh).setEnabled(true);
-                        }
-                    });
-                }
-            }).start();
-
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -403,28 +316,8 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
             if(this.isInternetConnected == false){
                 if(isPageLoaded == false){
                     isPageLoaded = true;
-                    if(searchActivityLayout.getVisibility() == View.VISIBLE)
-                        this.webView.loadUrl(this.graph_url);
-                    else if(websiteActivityLayout.getVisibility() == View.VISIBLE)
-                        this.acfWebView.loadUrl(this.acf_url);
+                    this.webView.loadUrl(this.graph_url);
                 }
-
-                if(buildingActivityLayout.getVisibility() == View.VISIBLE && isBuildingLoaded == false){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            SearchActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    buildingActivity.setGPS();
-                                }
-                            });
-                            buildingActivity.seekBar.setProgress(60);
-                            buildingActivity.getBuildingInfo(3000);
-                        }
-                    }).start();
-                }
-
             }
 
             this.isInternetConnected = true;
@@ -608,6 +501,8 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             webSettings.setDisplayZoomControls(false);
         }
+
+        webView.addJavascriptInterface(new JSInterface(this, resources, webView), "JSInterface");
         webView.loadUrl(this.graph_url);
     }
 
@@ -703,77 +598,6 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
         TextView titleView = (TextView) dialog.findViewById(context.getResources().getIdentifier("alertTitle", "id", "android"));
         if(titleView != null)
             titleView.setGravity(Gravity.CENTER);
-    }
-
-    public void setUpWebSite(){
-        acfWebView = (WebView) findViewById(R.id.acf_website_view);
-        acfProgress = (ProgressBar) findViewById(R.id.progresswebsite);
-        acf_back_button = (ImageButton) findViewById(R.id.web_back_button);
-        acf_refresh_button = (ImageButton) findViewById(R.id.web_refresh_button);
-        acf_forward_button = (ImageButton) findViewById(R.id.web_forward_button);
-
-        acf_back_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                if(acfWebView.canGoBack()){
-                    acfWebView.goBack();
-                }
-            }
-        });
-        acf_refresh_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                acfWebView.reload();
-            }
-        });
-        acf_forward_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                if(acfWebView.canGoForward()){
-                    acfWebView.goForward();
-                }
-            }
-        });
-
-        acfWebView.setWebViewClient(new WebViewClient(){
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url){
-                view.loadUrl(url);
-                return true;
-            }
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                acfProgress.setVisibility(View.VISIBLE);
-            }
-            @Override
-            public void onPageFinished(WebView view, String url){
-                acfProgress.setVisibility(View.GONE);
-            }
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                super.onReceivedError(view, errorCode, description, failingUrl);
-
-                if(SearchActivity.this.isInternetConnected == false)
-                    showSearchAlert(SearchActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
-                else
-                    showSearchAlert(SearchActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
-
-                String errorHTML = "<html><body><h1><center>An error occurred: The Internet connection appears to be offline.</center></h1></body></html>";
-                acfWebView.loadData(errorHTML, "text/html", "UTF-8");
-                isPageLoaded = false;
-            }
-        });
-
-        WebSettings settings = acfWebView.getSettings();
-
-        settings.setJavaScriptEnabled(true);
-        settings.setLoadWithOverviewMode(true);
-        settings.setUseWideViewPort(true);
-        settings.setBuiltInZoomControls(true);
-        settings.setDisplayZoomControls(false);
-        acfWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        acfWebView.setScrollbarFadingEnabled(false);
     }
 
     public void goProfile(View view){

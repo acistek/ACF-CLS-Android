@@ -3,6 +3,7 @@ package com.acistek.cls;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.view.Gravity;
 import android.webkit.JavascriptInterface;
@@ -29,25 +30,30 @@ public class JSInterface {
     @JavascriptInterface
     public void showAlertMessage(String echo, int success){
         if(success == 1){
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("");
-            builder.setMessage(echo);
-            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            context.onBackPressed();
-                        }
-                    });
-                }
-            });
-            AlertDialog dialog = builder.show();
+            if(echo.equalsIgnoreCase("notresponded")){
+                Intent i = new Intent(context, StaffNotRespPOActivity.class);
+                context.startActivity(i);
+            }
+            else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("");
+                builder.setMessage(echo);
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                context.onBackPressed();
+                            }
+                        });
+                    }
+                });
+                AlertDialog dialog = builder.show();
 
-            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-            messageView.setGravity(Gravity.CENTER);
-
+                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                messageView.setGravity(Gravity.CENTER);
+            }
         }
         else{
             var.showAlert(context, "", echo);

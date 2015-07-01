@@ -57,7 +57,7 @@ public class NavigationDrawerFragment extends Fragment {
     private View mFragmentContainerView;
     private MenuListAdapter menuListAdapter;
 
-    private int mCurrentSelectedPosition = 1;
+//    private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
@@ -78,14 +78,14 @@ public class NavigationDrawerFragment extends Fragment {
         mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
 
         if (savedInstanceState != null) {
-            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
+//            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
 
         session = new SessionManager(getActivity());
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+//        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -118,8 +118,8 @@ public class NavigationDrawerFragment extends Fragment {
                 inflater,
                 new String[]{
                     getString(R.string.title_section1),
-                    getString(R.string.title_section2),
-                    getString(R.string.title_section3),},
+                    getString(R.string.title_section2_menu),
+                    getString(R.string.title_section3_menu),},
                 new Integer[]{
                     R.drawable.menu_search,
                     R.drawable.menu_building,
@@ -127,7 +127,7 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerListView.setAdapter(menuListAdapter);
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        mDrawerListView.setItemChecked(1, true);
 
         return mDrawerListView;
     }
@@ -213,9 +213,10 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
+//        mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
+//            mDrawerListView.setItemChecked(position, true);
+            mDrawerListView.setItemChecked(1, true);
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
@@ -244,7 +245,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putInt(STATE_SELECTED_POSITION, 1);
     }
 
     @Override
@@ -264,32 +265,41 @@ public class NavigationDrawerFragment extends Fragment {
             this.menu = menu;
             showGlobalContextActionBar();
 
-            switch (mCurrentSelectedPosition + 1) {
-                case 2:
-                    if(session.getCoopid().equalsIgnoreCase("0")){
-                        menu.findItem(R.id.action_coop).setVisible(false);
-                        menu.findItem(R.id.search_blank_ac).setVisible(true);
-                        menu.findItem(R.id.building_refresh).setVisible(false);
-                    }
-                    else {
-                        menu.findItem(R.id.action_coop).setVisible(true);
-                        menu.findItem(R.id.search_blank_ac).setVisible(false);
-                        menu.findItem(R.id.building_refresh).setVisible(false);
-                    }
-                    break;
-                case 3:
-                    menu.findItem(R.id.action_coop).setVisible(false);
-                    menu.findItem(R.id.search_blank_ac).setVisible(false);
-                    menu.findItem(R.id.building_refresh).setVisible(true);
-                    break;
-                case 4:
-                    menu.findItem(R.id.action_coop).setVisible(false);
-                    menu.findItem(R.id.search_blank_ac).setVisible(true);
-                    menu.findItem(R.id.building_refresh).setVisible(false);
-                    break;
-                default:
-                    break;
+            if(session.getCoopid().equalsIgnoreCase("0")){
+                menu.findItem(R.id.action_coop).setVisible(false);
+                menu.findItem(R.id.search_blank_ac).setVisible(true);
             }
+            else {
+                menu.findItem(R.id.action_coop).setVisible(true);
+                menu.findItem(R.id.search_blank_ac).setVisible(false);
+            }
+
+//            switch (mCurrentSelectedPosition + 1) {
+//                case 2:
+//                    if(session.getCoopid().equalsIgnoreCase("0")){
+//                        menu.findItem(R.id.action_coop).setVisible(false);
+//                        menu.findItem(R.id.search_blank_ac).setVisible(true);
+////                        menu.findItem(R.id.building_refresh).setVisible(false);
+//                    }
+//                    else {
+//                        menu.findItem(R.id.action_coop).setVisible(true);
+//                        menu.findItem(R.id.search_blank_ac).setVisible(false);
+////                        menu.findItem(R.id.building_refresh).setVisible(false);
+//                    }
+//                    break;
+//                case 3:
+////                    menu.findItem(R.id.action_coop).setVisible(false);
+////                    menu.findItem(R.id.search_blank_ac).setVisible(false);
+////                    menu.findItem(R.id.building_refresh).setVisible(true);
+//                    break;
+//                case 4:
+////                    menu.findItem(R.id.action_coop).setVisible(false);
+////                    menu.findItem(R.id.search_blank_ac).setVisible(true);
+////                    menu.findItem(R.id.building_refresh).setVisible(false);
+//                    break;
+//                default:
+//                    break;
+//            }
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
