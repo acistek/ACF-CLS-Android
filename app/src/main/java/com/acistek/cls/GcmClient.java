@@ -124,7 +124,7 @@ public class GcmClient {
      * Stores the registration ID and the app versionCode in the application's
      * shared preferences.
      */
-    protected void registerInBackground(final String username, final String deviceType) {
+    protected void registerInBackground(final String username, final String deviceType, final String deviceID) {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -138,20 +138,22 @@ public class GcmClient {
 
                     // You should send the registration ID to your server over HTTP, so it
                     // can use GCM/HTTP or CCS to send messages to your app.
-                    boolean success = sendRegistrationIdToBackend(username, deviceType, regid);
+//                    boolean success = sendRegistrationIdToBackend(username, deviceType, deviceID, regid);
+
+                    sendRegistrationIdToBackend(username, deviceType, deviceID, regid);
 
                     // For this demo: we don't need to send it because the device will send
                     // upstream messages to a server that echo back the message using the
                     // 'from' address in the message.
 
                     // Persist the regID - no need to register again.
-                    if(success){
+//                    if(success){
                         storeRegistrationId(context, regid);
-                    }
-                    else{
-                        msg = "Error Sending Reg ID to backend";
-                        unregisterInBackground(username, deviceType, "0");
-                    }
+//                    }
+//                    else{
+//                        msg = "Error Sending Reg ID to backend";
+//                        unregisterInBackground(username, deviceType, deviceID, "0");
+//                    }
 
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
@@ -169,7 +171,7 @@ public class GcmClient {
         }.execute(null, null, null);
     }
 
-    public void unregisterInBackground(final String username, final String deviceType, final String deviceToken) {
+    public void unregisterInBackground(final String username, final String deviceType, final String deviceID, final String deviceToken) {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
@@ -181,7 +183,7 @@ public class GcmClient {
                     gcm.unregister();
                     regid = "";
                     msg = "Device unregistered, registration ID=" + regid;
-                    sendRegistrationIdToBackend(username, deviceType, deviceToken);
+                    sendRegistrationIdToBackend(username, deviceType, deviceID, deviceToken);
 
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
@@ -215,8 +217,8 @@ public class GcmClient {
      * messages to your app. Not needed for this demo since the device sends upstream messages
      * to a server that echoes back the message using the 'from' address in the message.
      */
-    protected boolean sendRegistrationIdToBackend(String username, String deviceType, String deviceToken) {
-        final String URL = var.cls_link + "/json/android_device_act.cfm";
+    protected void sendRegistrationIdToBackend(String username, String deviceType, String deviceID, String deviceToken) {
+        final String URL = var.cls_link + "/json/login_act.cfm?android=1&android_device=1";
         final String acfcode = var.acfcode;
 
         JSONObject sendJSON = new JSONObject();
@@ -225,9 +227,10 @@ public class GcmClient {
             sendJSON.put("acfcode", acfcode);
             sendJSON.put("devicetoken", deviceToken);
             sendJSON.put("devicetype", deviceType);
+            sendJSON.put("deviceidentifier", deviceID);
         } catch (JSONException e) {
             Log.e(TAG, "Error creating JSON Object");
-            return false;
+//            return false;
         }
 
         AsyncHttpClient client = new SyncHttpClient();
@@ -237,7 +240,7 @@ public class GcmClient {
             se = new StringEntity(sendJSON.toString());
         } catch (UnsupportedEncodingException e){
             Log.e(TAG, "Error setting string entity.");
-            return false;
+//            return false;
         }
 
         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
@@ -253,6 +256,7 @@ public class GcmClient {
                 try {
                     JSONObject response = new JSONObject(responseString);
                     if(response.getInt("success") == 1){
+                        GcmClient.this.session.setUUID(response.getString("loginUUID"));
                         GcmClient.this.successSendToBackend = true;
                     }
                     else{
@@ -265,6 +269,6 @@ public class GcmClient {
             }
         });
 
-        return this.successSendToBackend;
+//        return this.successSendToBackend;
     }
 }

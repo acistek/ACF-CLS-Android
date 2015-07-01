@@ -1,15 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context="com.acistek.cls.SearchActivity">
-    <item
-        android:id="@+id/action_coop"
-        android:title="@string/action_coop"
-        android:visible="false"
-        app:showAsAction="withText|always" />
+    xmlns:tools="http://schemas.android.com/tools" tools:context="com.acistek.cls.AcfWebActivity">
+
     <item
         android:id="@+id/search_blank_ac"
         android:title=""
         android:icon="@drawable/bar"
         android:visible="true"
         app:showAsAction="always" />
+
 </menu>

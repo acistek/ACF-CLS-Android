@@ -28,6 +28,7 @@
     <string name="profile_favorite_error">There was a problem. Please try again later.</string>
     <string name="profile_grouplist_cancel">Cancel</string>
     <string name="profile_grouplist_done">Done</string>
+    <string name="profile_enter_group">Enter a Group Name</string>
 
     <!-- Email -->
     <string name="action_send_email">Send</string>
@@ -69,8 +70,10 @@
 
     <!-- Menu -->
     <string name="title_section1">Search</string>
-    <string name="title_section2">ACF Buildings</string>
-    <string name="title_section3">ACF Web Site</string>
+    <string name="title_section2">Building Information</string>
+    <string name="title_section2_menu">ACF Buildings</string>
+    <string name="title_section3">ACF Web</string>
+    <string name="title_section3_menu">ACF Web Site</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
@@ -86,5 +89,12 @@
     <string name="call_cell_label">Call Cell</string>
     <string name="text_cell_label">Text Cell</string>
     <string name="call_office_label">Call Office</string>
+    <string name="title_activity_acf_web">AcfWebActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_building_info">BuildingInfoActivity</string>
+    <string name="title_activity_staff_not_resp_po">StaffNotRespPOActivity</string>
+    <string name="title_activity_staff_not_resp_users">StaffNotRespUsersActivity</string>
 
 </resources>

@@ -91,7 +91,7 @@ public class CoopListAdapter extends BaseAdapter {
             cell_phone.setText(resultp.get(CoopActivity.TAG_CELL_PHONE));
             office_phone.setText(resultp.get(CoopActivity.TAG_OFFICE_PHONE));
             final CharSequence[] items = {
-                    "Call Cell " +  cell_phone_number, "Text Cell " + cell_phone_number, "Call Office " + office_phone_number
+                    "Call Cell " +  cell_phone_number, "Text Cell " + cell_phone_number, "Call Office " + office_phone_number, "Cancel"
             };
             int colorPos = position % colors.length;
             itemView.setBackgroundColor(colors[colorPos]);
@@ -112,6 +112,9 @@ public class CoopListAdapter extends BaseAdapter {
                             else if(item==2){
                                 phoneIntent.setData(Uri.parse("tel:"+items[item].toString().substring(12)));
                                 context.startActivity(phoneIntent);
+                            }
+                            else if (item == 3) {
+                                dialog.dismiss();
                             }
                             else{
                                 sendIntent.setData(Uri.parse("sms:"+items[item].toString().substring(10)));

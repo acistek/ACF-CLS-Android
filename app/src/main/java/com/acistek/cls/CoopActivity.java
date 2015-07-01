@@ -196,7 +196,7 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
         }
 
         if(!userID.equalsIgnoreCase("0")){
-            final String get_coop = coop_url + "?contactlistid=" + userID + "&acfcode=" + acfcode;
+            final String get_coop = coop_url + "?contactlistid=" + userID + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
             AsyncHttpClient client = new AsyncHttpClient();
             client.post(get_coop, new TextHttpResponseHandler() {
 
@@ -366,7 +366,7 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
                 cell_phone.setText(cell_phone_number);
                 office_phone.setText(office_phone_number);
                 final CharSequence[] items = {
-                        "Call Cell " + cell_phone_number, "Text Cell " + cell_phone_number, "Call Office " + office_phone_number
+                        "Call Cell " + cell_phone_number, "Text Cell " + cell_phone_number, "Call Office " + office_phone_number, "Cancel"
                 };
 
                 pageLayout.setOnClickListener(new View.OnClickListener() {
@@ -384,6 +384,8 @@ public class CoopActivity extends ActionBarActivity implements ConnectionStateLi
                                 } else if (item == 2) {
                                     phoneIntent.setData(Uri.parse("tel:" + items[item].toString().substring(12)));
                                     CoopActivity.this.startActivity(phoneIntent);
+                                } else if (item == 3) {
+                                    dialog.dismiss();
                                 } else {
                                     sendIntent.setData(Uri.parse("sms:" + items[item].toString().substring(10)));
                                     CoopActivity.this.startActivity(sendIntent);

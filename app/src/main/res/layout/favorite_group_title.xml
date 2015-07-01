@@ -1,18 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/favorite_group_title_layout"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     android:background="#CFC3AE">
 
     <TextView
         android:id="@+id/favorite_group_title"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight=".3"
         android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
         android:padding="10dp" />
+
+    <LinearLayout
+        android:id="@+id/favorite_group_edit_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:orientation="vertical"
+        android:onClick="editGroupName">
+
+        <ImageView
+            android:id="@+id/favorite_group_edit"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/edit_group"/>
+
+        <TextView
+            android:id="@+id/favorite_group_edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/favorite_group_mail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:orientation="vertical"
+        android:onClick="mailGroupName">
+
+        <ImageView
+            android:id="@+id/favorite_group_mail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/mail_group"/>
+
+        <TextView
+            android:id="@+id/favorite_group_mail_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/favorite_group_delete_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:orientation="vertical"
+        android:onClick="deleteGroupName">
+
+        <ImageView
+            android:id="@+id/favorite_group_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/delete_group"/>
+
+        <TextView
+            android:id="@+id/favorite_group_delete_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
 </LinearLayout>

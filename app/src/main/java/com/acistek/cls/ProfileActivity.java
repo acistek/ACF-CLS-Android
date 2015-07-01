@@ -46,6 +46,9 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +57,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProfileActivity extends ActionBarActivity implements ConnectionStateListener{
@@ -64,7 +68,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
     private AppVar var = new AppVar();
     private static final String TAG = "ProfileActivity";
     private final String user_profile_url = var.cls_link + "/json/user_dsp.cfm";
-    private final String favorites_url = var.cls_link + "/json/android_favorite_act.cfm";
+    private final String favorites_url = var.cls_link + "/json/favorite_act.cfm?android=1";
 
     private boolean isInternetConnected;
     private boolean isPageLoaded = true;
@@ -106,6 +110,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
     private TextView profileMapTabText;
 
     private String selectedGroupNameFromList;
+    private ArrayList<String> groupListInfo;
 
     static int counter = 0;
     static int group_counter = -1;
@@ -317,7 +322,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
             Log.e(TAG, "Failed to encode ids");
         }
 
-        String profile_url = user_profile_url + "?contactListID=" + searchUserID + "&acfcode=" + acfcode + "&adminID=" + userID;
+        String profile_url = user_profile_url + "?contactListID=" + searchUserID + "&acfcode=" + acfcode + "&adminID=" + userID + "&deviceIdentifier=" + session.getDeviceID() + "&loginUUID=" + session.getUUID();
         AsyncHttpClient client = new AsyncHttpClient();
 
         client.post(profile_url, new TextHttpResponseHandler() {
@@ -384,6 +389,10 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
                                 user.setHeader(true);
                             else
                                 user.setHeader(false);
+
+                            if(header.equalsIgnoreCase("grouplist")){
+                                ProfileActivity.this.populateGroupList(info);
+                            }
 
                             userProfileInfo.add(user);
                         }
@@ -539,6 +548,7 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
         if(email != null){
             Intent i = new Intent(ProfileActivity.this, EmailActivity.class);
             i.putExtra("email", email);
+            i.putExtra("groupName", "");
             this.startActivity(i);
         }
         else{
@@ -579,352 +589,295 @@ public class ProfileActivity extends ActionBarActivity implements ConnectionStat
     }
 
     public void goFav(View view){
-        String acfcode = var.acfcode;
-        String userID = mContactListID;
-        String favID = searchContactListID;
-        String action = "get";
 
-        try {
-            userID = URLEncoder.encode(userID, "UTF-8");
-            favID = URLEncoder.encode(favID, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            userID = "0";
-            favID = "0";
-            Log.e(TAG, "Failed to encode ids");
-        }
+        final String groupCharacterSet = "\'1234567890-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-        if(!userID.equalsIgnoreCase("0") && !favID.equalsIgnoreCase("0")){
-            final String favorite_get_groups = favorites_url + "?contactlistid=" + userID + "&acfcode=" + acfcode + "&favoriteid=" + favID + "&action=" + action;
-            AsyncHttpClient client = new AsyncHttpClient();
+        final InputFilter groupFilter = new InputFilter() {
+            boolean shouldShowAlert = true;
 
-            client.post(favorite_get_groups, new TextHttpResponseHandler() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                boolean keepOriginal = true;
+                StringBuilder sb = new StringBuilder(end - start);
+                for (int i = start; i < end; i++) {
+                    char c = source.charAt(i);
+                    if (isCharAllowed(c)) // put your condition here
+                        sb.append(c);
+                    else
+                        keepOriginal = false;
+                }
+                if (keepOriginal)
+                    return null;
+                else {
+                    if(shouldShowAlert){
+                        shouldShowAlert = false;
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                        builder.setMessage("The Group Name must be in letters, numbers, hyphens, single quotes, and spaces only.");
+                        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                shouldShowAlert = true;
+                            }
+                        });
+                        AlertDialog dialog = builder.show();
+
+                        TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                        messageView.setGravity(Gravity.CENTER);
+
+                    }
+
+
+                    if (source instanceof Spanned) {
+                        SpannableString sp = new SpannableString(sb);
+                        TextUtils.copySpansFrom((Spanned) source, start, sb.length(), null, sp, 0);
+                        return sp;
+                    } else {
+                        return sb;
+                    }
+                }
+            }
+
+            private boolean isCharAllowed(char c) {
+                return Character.isLetterOrDigit(c) || Character.isSpaceChar(c) || groupCharacterSet.contains("" + c);
+            }
+        };
+
+        if(groupListInfo.isEmpty() || groupListInfo == null || groupListInfo.toString().equalsIgnoreCase("[]")) {
+            LinearLayout glayout = new LinearLayout(ProfileActivity.this);
+            glayout.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(20, 20, 20, 20);
+
+            final EditText gname = new EditText(ProfileActivity.this);
+            gname.setBackgroundDrawable(resources.getDrawable(R.drawable.login_textfield));
+            gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
+            gname.setHint(resources.getString(R.string.profile_enter_group));
+
+            gname.addTextChangedListener(new TextWatcher() {
+                boolean shouldShowAlert = true;
+
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if(!ProfileActivity.this.isFinishing()) {
-                        if (ProfileActivity.this.isInternetConnected == false)
-                            var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
-                        else
-                            var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    if(s.length() == 35){
+                        if(shouldShowAlert){
+                            shouldShowAlert = false;
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                            builder.setMessage("The Group Name must be less than 35 characters.");
+                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    shouldShowAlert = true;
+                                }
+                            });
+                            AlertDialog dialog = builder.show();
+
+                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                            messageView.setGravity(Gravity.CENTER);
+                        }
                     }
                 }
 
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        JSONObject response = new JSONObject(responseString);
-                        int success = response.getInt("success");
-                        int resultCount = response.getInt("resultCount");
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                        if(success == 1){
-                            String message = response.getString("message");
+                }
 
-                            final String groupCharacterSet = "\'1234567890-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                @Override
+                public void afterTextChanged(Editable s) {
 
-                            final InputFilter groupFilter = new InputFilter() {
-                                boolean shouldShowAlert = true;
-
-                                @Override
-                                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                                    boolean keepOriginal = true;
-                                    StringBuilder sb = new StringBuilder(end - start);
-                                    for (int i = start; i < end; i++) {
-                                        char c = source.charAt(i);
-                                        if (isCharAllowed(c)) // put your condition here
-                                            sb.append(c);
-                                        else
-                                            keepOriginal = false;
-                                    }
-                                    if (keepOriginal)
-                                        return null;
-                                    else {
-                                        if(shouldShowAlert){
-                                            shouldShowAlert = false;
-
-                                            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-                                            builder.setMessage("The Group Name must be in letters, numbers, hyphens, single quotes, and spaces only.");
-                                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    shouldShowAlert = true;
-                                                }
-                                            });
-                                            AlertDialog dialog = builder.show();
-
-                                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                                            messageView.setGravity(Gravity.CENTER);
-
-                                        }
-
-
-                                        if (source instanceof Spanned) {
-                                            SpannableString sp = new SpannableString(sb);
-                                            TextUtils.copySpansFrom((Spanned) source, start, sb.length(), null, sp, 0);
-                                            return sp;
-                                        } else {
-                                            return sb;
-                                        }
-                                    }
-                                }
-
-                                private boolean isCharAllowed(char c) {
-                                    return Character.isLetterOrDigit(c) || Character.isSpaceChar(c) || groupCharacterSet.contains("" + c);
-                                }
-                            };
-
-                            if(resultCount == 0){
-                                LinearLayout glayout = new LinearLayout(ProfileActivity.this);
-                                glayout.setOrientation(LinearLayout.VERTICAL);
-                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                                params.setMargins(20, 20, 20, 20);
-
-                                final EditText gname = new EditText(ProfileActivity.this);
-                                gname.setBackgroundDrawable(resources.getDrawable(R.drawable.login_textfield));
-                                gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
-
-                                gname.addTextChangedListener(new TextWatcher() {
-                                    boolean shouldShowAlert = true;
-
-                                    @Override
-                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        if(s.length() == 35){
-                                            if(shouldShowAlert){
-                                                shouldShowAlert = false;
-
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-                                                builder.setMessage("The Group Name must be less than 35 characters.");
-                                                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        shouldShowAlert = true;
-                                                    }
-                                                });
-                                                AlertDialog dialog = builder.show();
-
-                                                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                                                messageView.setGravity(Gravity.CENTER);
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                                    }
-
-                                    @Override
-                                    public void afterTextChanged(Editable s) {
-
-                                    }
-                                });
-
-                                glayout.addView(gname, params);
-
-                                final AlertDialog d = new AlertDialog.Builder(ProfileActivity.this)
-                                        .setMessage(message)
-                                        .setView(glayout)
-                                        .setPositiveButton(android.R.string.ok, null)
-                                        .setNegativeButton(android.R.string.cancel, null)
-                                        .create();
-
-                                d.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialog) {
-                                        Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
-                                        b.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                if(gname.getText().toString().trim().equalsIgnoreCase("")){
-                                                    var.showAlert(ProfileActivity.this, "", "Please enter a Group Name");
-                                                    gname.setText("");
-                                                }
-                                                else{
-                                                    ProfileActivity.this.addGroupFavorite(gname.getText().toString().trim());
-                                                    d.dismiss();
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
-
-                                d.show();
-
-                                TextView messageView = (TextView) d.findViewById(android.R.id.message);
-                                messageView.setGravity(Gravity.CENTER);
-                                messageView.setTypeface(null, Typeface.BOLD);
-                            }
-                            else{
-                                JSONArray list = response.getJSONArray("results");
-                                ArrayList<String> groupListInfo = new ArrayList<String>();
-
-                                for (int i = 0; i < list.length(); i++) {
-                                    JSONObject jsonItem = list.getJSONObject(i);
-                                    String name = jsonItem.getString("groupName");
-
-                                    groupListInfo.add(name);
-                                }
-
-                                GroupListAdapter groupListAdapter = new GroupListAdapter(ProfileActivity.this, R.layout.favorite_grouplist_listview, groupListInfo);
-                                groupListView.setAdapter(groupListAdapter);
-
-                                Log.i(TAG, groupListInfo.toString());
-
-                                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                final View layout = inflater.inflate(R.layout.alert_favorite_group, (ViewGroup) findViewById(R.id.alert_favorite_layout));
-                                final EditText gname = (EditText) layout.findViewById(R.id.alert_favorite_group_name);
-                                gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
-
-                                gname.addTextChangedListener(new TextWatcher() {
-                                    boolean shouldShowAlert = true;
-
-                                    @Override
-                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        if(s.length() == 35){
-                                            if(shouldShowAlert){
-                                                shouldShowAlert = false;
-
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-                                                builder.setMessage("The Group Name must be less than 35 characters.");
-                                                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        shouldShowAlert = true;
-                                                    }
-                                                });
-                                                AlertDialog dialog = builder.show();
-
-                                                TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
-                                                messageView.setGravity(Gravity.CENTER);
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                                    }
-
-                                    @Override
-                                    public void afterTextChanged(Editable s) {
-
-                                    }
-                                });
-
-                                final TextView gmessage = (TextView) layout.findViewById(R.id.alert_favorite_message);
-                                gmessage.setText(message);
-
-                                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this).setView(layout);
-                                final AlertDialog d = builder.create();
-
-                                d.setOnShowListener(new DialogInterface.OnShowListener() {
-                                    @Override
-                                    public void onShow(DialogInterface dialog) {
-                                        Button aok = (Button) layout.findViewById(R.id.alert_favorite_ok);
-                                        Button acancel = (Button) layout.findViewById(R.id.alert_favorite_cancel);
-                                        Button agrouplist = (Button) layout.findViewById(R.id.alert_favorite_grouplist);
-
-                                        aok.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                if(gname.getText().toString().trim().equalsIgnoreCase("")){
-                                                    var.showAlert(ProfileActivity.this, "", "Please enter a Group Name");
-                                                    gname.setText("");
-                                                }
-                                                else{
-                                                    ProfileActivity.this.addGroupFavorite(gname.getText().toString().trim());
-                                                    d.dismiss();
-                                                }
-                                            }
-                                        });
-
-                                        acancel.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                d.dismiss();
-                                            }
-                                        });
-
-                                        agrouplist.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                groupListLayout.setVisibility(View.VISIBLE);
-                                                d.dismiss();
-                                            }
-                                        });
-                                    }
-                                });
-
-                                d.show();
-
-                            }
-                        }
-                        else{
-                            var.showAlert(ProfileActivity.this, "", response.getString("error_message"));
-                        }
-
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Problem retrieving group list.");
-                        var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
-                    }
                 }
             });
+
+            glayout.addView(gname, params);
+
+            final AlertDialog d = new AlertDialog.Builder(ProfileActivity.this)
+                    .setMessage("Please enter a Group Name")
+                    .setView(glayout)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .create();
+
+            d.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                    b.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (gname.getText().toString().trim().equalsIgnoreCase("")) {
+                                var.showAlert(ProfileActivity.this, "", "Please enter a Group Name");
+                                gname.setText("");
+                            } else {
+                                ProfileActivity.this.addGroupFavorite(gname.getText().toString().trim());
+                                d.dismiss();
+                            }
+                        }
+                    });
+                }
+            });
+
+            d.show();
+
+            TextView messageView = (TextView) d.findViewById(android.R.id.message);
+            messageView.setGravity(Gravity.CENTER);
+            messageView.setTypeface(null, Typeface.BOLD);
+        }
+        else {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View layout = inflater.inflate(R.layout.alert_favorite_group, (ViewGroup) findViewById(R.id.alert_favorite_layout));
+            final EditText gname = (EditText) layout.findViewById(R.id.alert_favorite_group_name);
+            gname.setFilters(new InputFilter[]{groupFilter, new InputFilter.LengthFilter(35)});
+            gname.setHint(resources.getString(R.string.profile_enter_group));
+
+            gname.addTextChangedListener(new TextWatcher() {
+                boolean shouldShowAlert = true;
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    if(s.length() == 35){
+                        if(shouldShowAlert){
+                            shouldShowAlert = false;
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
+                            builder.setMessage("The Group Name must be less than 35 characters.");
+                            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    shouldShowAlert = true;
+                                }
+                            });
+                            AlertDialog dialog = builder.show();
+
+                            TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
+                            messageView.setGravity(Gravity.CENTER);
+                        }
+                    }
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+
+            final TextView gmessage = (TextView) layout.findViewById(R.id.alert_favorite_message);
+            gmessage.setText("Enter New Group Name or Select From Group List");
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this).setView(layout);
+            final AlertDialog d = builder.create();
+
+            d.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    Button aok = (Button) layout.findViewById(R.id.alert_favorite_ok);
+                    Button acancel = (Button) layout.findViewById(R.id.alert_favorite_cancel);
+                    Button agrouplist = (Button) layout.findViewById(R.id.alert_favorite_grouplist);
+
+                    aok.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(gname.getText().toString().trim().equalsIgnoreCase("")){
+                                var.showAlert(ProfileActivity.this, "", "Please enter a Group Name");
+                                gname.setText("");
+                            }
+                            else{
+                                ProfileActivity.this.addGroupFavorite(gname.getText().toString().trim());
+                                d.dismiss();
+                            }
+                        }
+                    });
+
+                    acancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            d.dismiss();
+                        }
+                    });
+
+                    agrouplist.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            groupListLayout.setVisibility(View.VISIBLE);
+                            d.dismiss();
+                        }
+                    });
+                }
+            });
+
+            d.show();
         }
     }
 
     public void addGroupFavorite(String group_name){
-        String acfcode = var.acfcode;
         String userID = mContactListID;
         String favID = searchContactListID;
-        String action = "add";
+        String deviceID = session.getDeviceID();
+        String deviceUUID = session.getUUID();
+
+        JSONObject sendJSON = new JSONObject();
+        try{
+            sendJSON.put("contactListID", userID);
+            sendJSON.put("favorite_contactListID", favID);
+            sendJSON.put("groupName", group_name);
+            sendJSON.put("deviceIdentifier", deviceID);
+            sendJSON.put("loginUUID", deviceUUID);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error creating JSON Object");
+        }
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        StringEntity se = null;
 
         try {
-            userID = URLEncoder.encode(userID, "UTF-8");
-            favID = URLEncoder.encode(favID, "UTF-8");
-            group_name = URLEncoder.encode(group_name, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            userID = "0";
-            favID = "0";
-            group_name = "";
-            Log.e(TAG, "Failed to encode ids");
+            se = new StringEntity(sendJSON.toString());
+        } catch (UnsupportedEncodingException e){
+            Log.e(TAG, "Error setting string entity.");
         }
 
-        if(!userID.equalsIgnoreCase("0") && !favID.equalsIgnoreCase("0")){
-            final String favorite_add_user = favorites_url + "?contactlistid=" + userID + "&acfcode=" + acfcode + "&favoriteid=" + favID + "&action=" + action + "&group=" + group_name;
-            AsyncHttpClient client = new AsyncHttpClient();
-
-            client.post(favorite_add_user, new TextHttpResponseHandler() {
-                @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    if(!ProfileActivity.this.isFinishing()) {
-                        if (ProfileActivity.this.isInternetConnected == false)
-                            var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
-                        else
-                            var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
-                    }
+        se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
+        client.post(null, favorites_url, se, "application/json", new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int i, Header[] headers, String s, Throwable throwable) {
+                if(!ProfileActivity.this.isFinishing()) {
+                    if (ProfileActivity.this.isInternetConnected == false)
+                        var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
+                    else
+                        var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_service));
                 }
+            }
 
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                    try {
-                        JSONObject response = new JSONObject(responseString);
-                        int success = response.getInt("success");
+            @Override
+            public void onSuccess(int i, Header[] headers, String s) {
+                try {
+                    JSONObject response = new JSONObject(s);
+                    String gList = response.getString("groupList");
+                    String message = response.getString("message");
 
-                        if(success == 1){
-                            var.showAlert(ProfileActivity.this, "", response.getString("message"));
-                        }
-                        else{
-                            var.showAlert(ProfileActivity.this, "", response.getString("error_message"));
-                        }
+                    ProfileActivity.this.populateGroupList(gList);
+                    var.showAlert(ProfileActivity.this, "", message);
 
-                    } catch (JSONException e) {
-                        Log.e(TAG, "Problem adding user.");
-                        var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
-                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "Problem adding user.");
+                    var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
                 }
-            });
-        }
-        else{
-            var.showAlert(ProfileActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.profile_favorite_error));
-        }
+            }
+        });
+    }
+
+    public void populateGroupList(String groupList){
+        groupListInfo = new ArrayList<String>(Arrays.asList(groupList.split("\\|~\\|")));
+
+        Log.e(TAG, "Array" + groupListInfo.toString());
+
+        GroupListAdapter groupListAdapter = new GroupListAdapter(ProfileActivity.this, R.layout.favorite_grouplist_listview, groupListInfo);
+        groupListView.setAdapter(groupListAdapter);
     }
 
     public void closeGroupList(View v){

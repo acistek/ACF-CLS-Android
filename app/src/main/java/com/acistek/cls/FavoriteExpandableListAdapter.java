@@ -128,7 +128,14 @@ public class FavoriteExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         TextView title = (TextView) convertView.findViewById(R.id.favorite_group_title);
+        TextView eTitle = (TextView) convertView.findViewById(R.id.favorite_group_edit_name);
+        TextView mTitle = (TextView) convertView.findViewById(R.id.favorite_group_mail_name);
+        TextView dTitle = (TextView) convertView.findViewById(R.id.favorite_group_delete_name);
+
         title.setText(groupName);
+        eTitle.setText(groupName);
+        mTitle.setText(groupName);
+        dTitle.setText(groupName);
 
         return convertView;
     }

@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.acistek.cls.BuildingInfoActivity">
+
+    <item android:id="@+id/building_refresh"
+        android:icon="@drawable/restart_menu"
+        android:title="@string/building_refresh"
+        android:visible="true"
+        app:showAsAction="always" />
+
+</menu>
