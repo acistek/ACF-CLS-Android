@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -96,6 +97,7 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
         resources = getResources();
         gcmClient = new GcmClient(getApplicationContext(), this);
         session = new SessionManager(getApplicationContext());
+        Crashlytics.getInstance().setUserName(session.getUsername());
 
         if(session.isLoggedIn() && !session.isExpired()){
             Intent i = new Intent(LoginActivity.this, SearchActivity.class);

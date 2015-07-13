@@ -28,6 +28,7 @@ import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -101,6 +102,7 @@ public class BuildingInfoActivity extends ActionBarActivity implements Connectio
         resources = getResources();
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
+        Crashlytics.getInstance().setUserName(session.getUsername());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

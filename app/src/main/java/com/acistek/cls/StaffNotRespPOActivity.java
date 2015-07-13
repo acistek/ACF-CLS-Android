@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -65,6 +66,7 @@ public class StaffNotRespPOActivity extends ActionBarActivity implements Connect
         resources = getResources();
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
+        Crashlytics.getInstance().setUserName(session.getUsername());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

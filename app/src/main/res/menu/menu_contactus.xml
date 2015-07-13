@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context="com.acistek.cls.ContactUsActivity">
+    <item
+        android:id="@+id/action_send_contact_us_email"
+        android:title="@string/action_send_email"
+        app:showAsAction="withText|always" />
+</menu>

@@ -24,6 +24,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
@@ -55,7 +57,8 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
-    private MenuListAdapter menuListAdapter;
+    private MenuItemListAdapter menuItemListAdapter;
+//    private MenuListAdapter menuListAdapter;
 
 //    private int mCurrentSelectedPosition = 1;
     private boolean mFromSavedInstanceState;
@@ -101,7 +104,6 @@ public class NavigationDrawerFragment extends Fragment {
         TextView mDrawerMenuText = (TextView) inflater.inflate(R.layout.fragment_navigation_drawer_title, container, false);
 
         mDrawerListView = (ListView) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -110,23 +112,25 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        mDrawerListView.addHeaderView(mDrawerMenuText, R.string.drawer_menu_title, false);
-        mDrawerListView.setHeaderDividersEnabled(false);
-        mDrawerListView.setDividerHeight(0);
+//        mDrawerListView.addHeaderView(mDrawerMenuText, R.string.drawer_menu_title, false);
+//        mDrawerListView.setHeaderDividersEnabled(false);
+//        mDrawerListView.setDividerHeight(0);
 
-        menuListAdapter = new MenuListAdapter(getActionBar().getThemedContext(),
-                inflater,
-                new String[]{
-                    getString(R.string.title_section1),
-                    getString(R.string.title_section2_menu),
-                    getString(R.string.title_section3_menu),},
-                new Integer[]{
-                    R.drawable.menu_search,
-                    R.drawable.menu_building,
-                    R.drawable.menu_web
-        });
+//        menuListAdapter = new MenuListAdapter(getActionBar().getThemedContext(),
+//                inflater,
+//                new String[]{
+//                    getString(R.string.title_section1),
+//                    getString(R.string.title_section2_menu),
+//                    getString(R.string.title_section3_menu)},
+//                new Integer[]{
+//                    R.drawable.menu_search,
+//                    R.drawable.menu_building,
+//                    R.drawable.menu_web
+//        });
 
-        mDrawerListView.setAdapter(menuListAdapter);
+        menuItemListAdapter = new MenuItemListAdapter(getActionBar().getThemedContext(), generateMenuItems());
+
+        mDrawerListView.setAdapter(menuItemListAdapter);
         mDrawerListView.setItemChecked(1, true);
 
         return mDrawerListView;
@@ -339,5 +343,24 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void close(){
         mDrawerLayout.closeDrawer(mFragmentContainerView);
+    }
+
+    public ArrayList<com.acistek.cls.MenuItem> generateMenuItems(){
+        com.acistek.cls.MenuItem menuTitle = new com.acistek.cls.MenuItem("Menu", null, true);
+        com.acistek.cls.MenuItem supportTitle = new com.acistek.cls.MenuItem("Support", null, true);
+        com.acistek.cls.MenuItem searchItem = new com.acistek.cls.MenuItem(getString(R.string.title_section1),R.drawable.menu_search,false);
+        com.acistek.cls.MenuItem buildingItem = new com.acistek.cls.MenuItem(getString(R.string.title_section2_menu),R.drawable.menu_building,false);
+        com.acistek.cls.MenuItem webItem = new com.acistek.cls.MenuItem(getString(R.string.title_section3_menu),R.drawable.menu_web,false);
+        com.acistek.cls.MenuItem contactItem = new com.acistek.cls.MenuItem(getString(R.string.title_section4_menu),R.drawable.menu_contact_us,false);
+
+        ArrayList<com.acistek.cls.MenuItem> menuItemArrayList = new ArrayList<>();
+        menuItemArrayList.add(menuTitle);
+        menuItemArrayList.add(searchItem);
+        menuItemArrayList.add(buildingItem);
+        menuItemArrayList.add(webItem);
+        menuItemArrayList.add(supportTitle);
+        menuItemArrayList.add(contactItem);
+
+        return menuItemArrayList;
     }
 }

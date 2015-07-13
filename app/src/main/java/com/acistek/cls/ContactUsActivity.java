@@ -5,9 +5,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,20 +19,16 @@ import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 
+public class ContactUsActivity extends ActionBarActivity implements ConnectionStateListener{
 
-public class EmailActivity extends ActionBarActivity implements ConnectionStateListener{
-
-    private String toEmail;
-    private String groupName;
     private String mContactListID;
 
     private AppVar var = new AppVar();
-    private static final String TAG = "EmailActivity";
-    private String user_email_url = var.cls_link + "/?switchID=email_dsp&android=1";
+    private String user_email_url = var.cls_link + "/?switchID=help_dsp";
 
     private TextView actionbarText;
 
-    private WebView emailWebView;
+    private WebView contactusWebView;
     private ProgressBar progressBar;
 
     private boolean isInternetConnected;
@@ -47,7 +43,7 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_email);
+        setContentView(R.layout.activity_contact_us);
 
         resources = getResources();
         session = new SessionManager(getApplicationContext());
@@ -61,33 +57,26 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
         actionBar.setCustomView(R.layout.abs_layout);
 
         actionbarText = (TextView) findViewById(R.id.search_title);
-        emailWebView = (WebView) findViewById(R.id.webviewemail);
-        progressBar = (ProgressBar) findViewById(R.id.progressemail);
+        contactusWebView = (WebView) findViewById(R.id.webviewcontactus);
+        progressBar = (ProgressBar) findViewById(R.id.progresscontactus);
 
         connFilter = new IntentFilter();
         connFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         csr = new ConnectionStateReceiver();
         registerReceiver(csr, connFilter);
 
-        toEmail = getIntent().getExtras().getString("email");
-        groupName = getIntent().getExtras().getString("groupName");
         mContactListID = session.getContactlistid();
 
-        actionbarText.setText("Mail");
+        actionbarText.setText("Contact Us");
 
-        if(!toEmail.equalsIgnoreCase(""))
-            user_email_url = user_email_url + "&contactlistid=" + mContactListID + "&toemail=" + toEmail;
-        else
-            user_email_url = user_email_url + "&contactlistid=" + mContactListID + "&groupName=" + groupName;
-
+        user_email_url = user_email_url + "&contactlistid=" + mContactListID + "&android=1";
         setUpWebView();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_email, menu);
+        getMenuInflater().inflate(R.menu.menu_contactus, menu);
         return true;
     }
 
@@ -95,7 +84,7 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_send_email) {
+        if (id == R.id.action_send_contact_us_email) {
             sendEmail();
             return true;
         }
@@ -131,7 +120,7 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
         if(isConnected){
             if(this.isInternetConnected == false && isPageLoaded == false){
                 isPageLoaded = true;
-                emailWebView.loadUrl(this.user_email_url);
+                contactusWebView.loadUrl(this.user_email_url);
             }
 
             this.isInternetConnected = true;
@@ -142,7 +131,7 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
     }
 
     public void setUpWebView() {
-        emailWebView.setWebViewClient(new WebViewClient(){
+        contactusWebView.setWebViewClient(new WebViewClient(){
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
@@ -157,24 +146,24 @@ public class EmailActivity extends ActionBarActivity implements ConnectionStateL
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 String errorHTML = "<html><body><center>An error occurred: The Internet connection appears to be offline.</center></body></html>";
-                emailWebView.loadData(errorHTML, "text/html", "UTF-8");
-                var.showAlert(EmailActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
+                contactusWebView.loadData(errorHTML, "text/html", "UTF-8");
+                var.showAlert(ContactUsActivity.this, resources.getString(R.string.alert_error), resources.getString(R.string.alert_no_internet));
                 isPageLoaded = false;
             }
         });
 
-        WebSettings webSettings = emailWebView.getSettings();
+        WebSettings webSettings = contactusWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
         webSettings.setBuiltInZoomControls(false);
 
 
-        emailWebView.addJavascriptInterface(new JSInterface(this, resources, emailWebView), "JSInterface");
-        emailWebView.loadUrl(this.user_email_url);
+        contactusWebView.addJavascriptInterface(new JSInterface(this, resources, contactusWebView), "JSInterface");
+        contactusWebView.loadUrl(this.user_email_url);
     }
 
     public void sendEmail(){
-        emailWebView.loadUrl("javascript:sendMail(1)");
+        contactusWebView.loadUrl("javascript:sendMail(1)");
     }
 }

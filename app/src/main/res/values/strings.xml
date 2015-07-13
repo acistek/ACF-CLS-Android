@@ -67,6 +67,7 @@
     <string name="title_activity_favorite">FavoriteActivity</string>
     <string name="title_activity_notification">NotificationActivity</string>
     <string name="title_activity_webview">WebviewActivity</string>
+    <string name="title_activity_contactus">ContactUsActivity</string>
 
     <!-- Menu -->
     <string name="title_section1">Search</string>
@@ -74,6 +75,7 @@
     <string name="title_section2_menu">ACF Buildings</string>
     <string name="title_section3">ACF Web</string>
     <string name="title_section3_menu">ACF Web Site</string>
+    <string name="title_section4_menu">Contact Us</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
