@@ -19,6 +19,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 
 public class WebviewActivity extends ActionBarActivity implements ConnectionStateListener{
 
@@ -51,6 +53,7 @@ public class WebviewActivity extends ActionBarActivity implements ConnectionStat
         resources = getResources();
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
+        Crashlytics.getInstance().setUserName(session.getUsername());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);

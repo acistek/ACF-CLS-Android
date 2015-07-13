@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.view.Gravity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -54,6 +55,11 @@ public class JSInterface {
                 TextView messageView = (TextView) dialog.findViewById(android.R.id.message);
                 messageView.setGravity(Gravity.CENTER);
             }
+        }
+        else if(success == 2){
+            Intent phoneIntent = new Intent(Intent.ACTION_CALL);
+            phoneIntent.setData(Uri.parse("tel:" + echo));
+            context.startActivity(phoneIntent);
         }
         else{
             var.showAlert(context, "", echo);

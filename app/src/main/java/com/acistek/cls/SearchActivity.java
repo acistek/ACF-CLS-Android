@@ -51,6 +51,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -127,6 +128,7 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
         resources = getResources();
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
+        Crashlytics.getInstance().setUserName(session.getUsername());
 
         welcome = (TextView)findViewById(R.id.welcome_name);
         webView = (WebView) findViewById(R.id.webviewgraph);
@@ -253,6 +255,12 @@ public class SearchActivity extends ActionBarActivity implements NavigationDrawe
 //                mPosition = number;
                 Intent ii = new Intent(SearchActivity.this, AcfWebActivity.class);
                 this.startActivity(ii);
+                break;
+            case 6:
+//                mTitle = getString(R.string.title_section3);
+//                mPosition = number;
+                Intent iii = new Intent(SearchActivity.this, ContactUsActivity.class);
+                this.startActivity(iii);
                 break;
             default:
                 break;

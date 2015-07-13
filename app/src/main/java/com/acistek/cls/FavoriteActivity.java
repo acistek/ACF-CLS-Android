@@ -40,6 +40,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -96,6 +97,7 @@ public class FavoriteActivity extends ActionBarActivity implements ConnectionSta
         resources = getResources();
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
+        Crashlytics.getInstance().setUserName(session.getUsername());
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
