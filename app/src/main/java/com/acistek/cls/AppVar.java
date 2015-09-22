@@ -18,7 +18,7 @@ import android.widget.TextView;
  * Created by acistek on 4/8/2015.
  */
 public class AppVar {
-    protected String cls_link = "https://extranet.acf.hhs.gov/mobile/app/1.3.0";
+    protected String cls_link = "https://staging.acf.hhs.gov/mobile/app/1.4.0";
     protected String acf_link = "https://www.acf.hhs.gov";
     protected String acfcode = "clsmobile";
     protected String blockCharacterSet = "\'\"<>|{}[]\\/";

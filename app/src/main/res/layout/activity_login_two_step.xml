@@ -1,0 +1,143 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="100"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:clickable="true"
+    tools:context="com.acistek.cls.LoginTwoStepActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:gravity="top"
+        android:background="#DACDB7">
+
+        <ImageView
+            android:id="@+id/headerlogintwo"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:src="@drawable/acf" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="35"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="270dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:padding="5dp"
+            android:text="@string/twofactor"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="19dp"
+            android:background="#555555"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cellphone"
+            android:textColor="#000000"
+            android:textSize="19dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="7dp"
+                android:scaleType="fitCenter"
+                android:visibility="invisible"
+                android:src="@drawable/edit_group"/>
+
+            <EditText
+                android:id="@+id/logintwo_cellphone"
+                android:layout_width="190dp"
+                android:layout_height="40dp"
+                android:maxLength="14"
+                android:inputType="number"
+                android:digits="1234567890"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:background="@drawable/login_textfield" />
+
+            <ImageView
+                android:id="@+id/cellphone_edit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="7dp"
+                android:onClick="loginTwoEditCell"
+                android:scaleType="fitCenter"
+                android:src="@drawable/edit_group"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/logintwo_cancel"
+                android:layout_width="125dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="10dp"
+                android:textSize="22dp"
+                android:textAllCaps="false"
+                android:textColor="@drawable/login_button_text_color"
+                android:background="@drawable/login_button"
+                android:onClick="loginTwoCancel"
+                android:text="@string/cancel"/>
+
+            <Button
+                android:id="@+id/logintwo_send"
+                android:layout_width="125dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="22dp"
+                android:textAllCaps="false"
+                android:textColor="@drawable/login_button_text_color"
+                android:background="@drawable/login_button"
+                android:onClick="loginTwoSendPin"
+                android:text="@string/sendpin"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="55"
+        android:gravity="bottom">
+
+        <WebView android:id="@+id/webviewtwofactor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fadeScrollbars="true" />
+        <ProgressBar android:id="@+id/progresslogintwo"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleLarge"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -97,7 +97,7 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
         resources = getResources();
         gcmClient = new GcmClient(getApplicationContext(), this);
         session = new SessionManager(getApplicationContext());
-        Crashlytics.getInstance().setUserName(session.getUsername());
+//        Crashlytics.getInstance().setUserName(session.getUsername());
 
         if(session.isLoggedIn() && !session.isExpired()){
             Intent i = new Intent(LoginActivity.this, SearchActivity.class);
@@ -268,7 +268,6 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
         String password = passwordView.getText().toString();
         String domainSelect = (hhsButton.isChecked() ? "ITSC":"external");
         String acfcode = var.acfcode;
-//        String deviceToken = session.getRegistrationID();
         final String deviceID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         final String deviceType = getDeviceName();
         final String URL = var.cls_link + "/json/login_act.cfm?android=1";
@@ -283,8 +282,6 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                 sendJSON.put("username", username);
                 sendJSON.put("password", password);
                 sendJSON.put("acfcode", acfcode);
-//                sendJSON.put("deviceToken", deviceToken);
-//                sendJSON.put("deviceType", deviceType);
             } catch (JSONException e) {
                 Log.e(TAG, "Error creating JSON Object");
             }
@@ -306,17 +303,15 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                         var.showAlert(LoginActivity.this, resources.getString(R.string.alert_sign_in), resources.getString(R.string.alert_no_internet));
                     else
                         var.showAlert(LoginActivity.this, resources.getString(R.string.alert_sign_in), resources.getString(R.string.alert_no_service));
-
-                    Log.e(TAG, responseString);
                 }
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, String responseString) {
                     Log.e(TAG, responseString);
+
                     try {
                         JSONObject response = new JSONObject(responseString);
                         if(response.getInt("success") == 1){
-                            session.createLoginSession(response.getString("userName"), response.getString("contactListID"), response.getString("coopID"), deviceType, username, deviceID);
 
                             if (gcmClient.checkPlayServices()) {
                                 gcmClient.gcm = GoogleCloudMessaging.getInstance(LoginActivity.this);
@@ -329,9 +324,16 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                                 Log.i(TAG, "No valid Google Play Services APK found.");
                             }
 
-                            Intent i = new Intent(LoginActivity.this, SearchActivity.class);
-                            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Intent i = new Intent(LoginActivity.this, LoginTwoStepActivity.class);
+                            Bundle b = new Bundle();
+                            b.putString("username", response.getString("userName"));
+                            b.putString("contactlistid", response.getString("contactListID"));
+                            b.putString("coopid", response.getString("coopID"));
+                            b.putString("devicetype", deviceType);
+                            b.putString("loginusername", username);
+                            b.putString("deviceid", deviceID);
+                            b.putString("cellphone", response.getString("cellPhone"));
+                            i.putExtras(b);
                             LoginActivity.this.startActivity(i);
                             LoginActivity.this.finish();
 

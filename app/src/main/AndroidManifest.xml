@@ -117,35 +117,48 @@
 
         <activity
             android:name=".AcfWebActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_acf_web"
             android:parentActivityName=".SearchActivity"
-            android:configChanges="orientation"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".BuildingInfoActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_building_info"
             android:parentActivityName=".SearchActivity"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".StaffNotRespPOActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_staff_not_resp_po"
             android:parentActivityName=".SearchActivity"
-            android:configChanges="orientation"
             android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".StaffNotRespUsersActivity"
+            android:configChanges="orientation"
             android:label="@string/title_activity_staff_not_resp_users"
             android:parentActivityName=".StaffNotRespPOActivity"
-            android:configChanges="orientation"
             android:screenOrientation="portrait" >
         </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="115482c1ee646a87043f410d391e8ef97918b648" />
+
+        <activity
+            android:name=".LoginTwoStepActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_login_two_step"
+            android:parentActivityName=".LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.acistek.cls.LoginActivity" />
+        </activity>
     </application>
 
 </manifest>

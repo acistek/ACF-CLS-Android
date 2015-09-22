@@ -7,6 +7,9 @@
     <string name="username">USERNAME</string>
     <string name="password">PASSWORD</string>
     <string name="signin">Sign In</string>
+    <string name="sendpin">Send PIN</string>
+    <string name="cellphone">Cell Phone</string>
+    <string name="twofactor">Two-Step Authentication</string>
 
     <!-- Search -->
     <string name="action_coop">COOP</string>
@@ -98,5 +101,6 @@
     <string name="title_activity_building_info">BuildingInfoActivity</string>
     <string name="title_activity_staff_not_resp_po">StaffNotRespPOActivity</string>
     <string name="title_activity_staff_not_resp_users">StaffNotRespUsersActivity</string>
+    <string name="title_activity_login_two_step">LoginTwoStepActivity</string>
 
 </resources>

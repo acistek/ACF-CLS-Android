@@ -257,6 +257,7 @@ public class GcmClient {
                     JSONObject response = new JSONObject(responseString);
                     if(response.getInt("success") == 1){
                         GcmClient.this.session.setUUID(response.getString("loginUUID"));
+                        Log.e(TAG, response.getString("loginUUID"));
                         GcmClient.this.successSendToBackend = true;
                     }
                     else{

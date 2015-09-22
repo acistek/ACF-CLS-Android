@@ -54,40 +54,40 @@ public class GcmIntentService extends IntentService{
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, NotificationActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setWhen(System.currentTimeMillis())
-                .setContentTitle("CLS Notification")
-                .setContentText(msg)
-                .setContentIntent(contentIntent)
-                .getNotification();
+        if(count != null && msg != null) {
+            Notification notification = new Notification.Builder(this)
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("CLS Notification")
+                    .setContentText(msg)
+                    .setContentIntent(contentIntent)
+                    .getNotification();
 
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notification.defaults |= Notification.DEFAULT_SOUND;
-        notification.defaults |= Notification.DEFAULT_LIGHTS;
-        notification.defaults |= Notification.DEFAULT_VIBRATE;
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            notification.defaults |= Notification.DEFAULT_SOUND;
+            notification.defaults |= Notification.DEFAULT_LIGHTS;
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
 
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
-        PowerManager pm = (PowerManager) this
-                .getSystemService(Context.POWER_SERVICE);
+            PowerManager pm = (PowerManager) this
+                    .getSystemService(Context.POWER_SERVICE);
 
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
-                | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
-        wl.acquire(15000);
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                    | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+            wl.acquire(15000);
 
-        manager.notify(R.string.app_name, notification);
+            manager.notify(R.string.app_name, notification);
 
-        MainApplication.notification_count = Integer.parseInt(count);
-        if(MainApplication.inSearch && MainApplication.currentActivity != null){
-            this.variableChangedListener = (VariableChangedListener) MainApplication.currentActivity;
-            this.variableChangedListener.newNotifications();
-        }
-        else if(MainApplication.inNotifications && MainApplication.currentActivity != null){
-            this.variableChangedListener = (VariableChangedListener) MainApplication.currentActivity;
-            this.variableChangedListener.newNotifications();
-        }
-        else{
+            MainApplication.notification_count = Integer.parseInt(count);
+            if (MainApplication.inSearch && MainApplication.currentActivity != null) {
+                this.variableChangedListener = (VariableChangedListener) MainApplication.currentActivity;
+                this.variableChangedListener.newNotifications();
+            } else if (MainApplication.inNotifications && MainApplication.currentActivity != null) {
+                this.variableChangedListener = (VariableChangedListener) MainApplication.currentActivity;
+                this.variableChangedListener.newNotifications();
+            } else {
+            }
         }
     }
 }
