@@ -266,7 +266,7 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
     public void login(View view) {
         final String username = usernameView.getText().toString();
         String password = passwordView.getText().toString();
-        String domainSelect = (hhsButton.isChecked() ? "ITSC":"external");
+        final String domainSelect = (hhsButton.isChecked() ? "ITSC":"external");
         String acfcode = var.acfcode;
         final String deviceID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         final String deviceType = getDeviceName();
@@ -313,6 +313,8 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                         JSONObject response = new JSONObject(responseString);
                         if(response.getInt("success") == 1){
 
+                            int isDemoAccount = response.getInt("isDemoAccount");
+
                             if (gcmClient.checkPlayServices()) {
                                 gcmClient.gcm = GoogleCloudMessaging.getInstance(LoginActivity.this);
                                 gcmClient.regid = gcmClient.getRegistrationId(getApplicationContext());
@@ -324,19 +326,30 @@ public class LoginActivity extends Activity implements ConnectionStateListener{
                                 Log.i(TAG, "No valid Google Play Services APK found.");
                             }
 
-                            Intent i = new Intent(LoginActivity.this, LoginTwoStepActivity.class);
-                            Bundle b = new Bundle();
-                            b.putString("username", response.getString("userName"));
-                            b.putString("contactlistid", response.getString("contactListID"));
-                            b.putString("coopid", response.getString("coopID"));
-                            b.putString("devicetype", deviceType);
-                            b.putString("loginusername", username);
-                            b.putString("deviceid", deviceID);
-                            b.putString("cellphone", response.getString("cellPhone"));
-                            i.putExtras(b);
-                            LoginActivity.this.startActivity(i);
-                            LoginActivity.this.finish();
+                            if(isDemoAccount == 1){
+                                session.createLoginSession(response.getString("userName"), response.getString("contactListID"), response.getString("coopID"),
+                                        deviceType, username, deviceID);
 
+                                Intent intent = new Intent(LoginActivity.this, SearchActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                LoginActivity.this.startActivity(intent);
+                                LoginActivity.this.finish();
+                            }
+                            else{
+                                Intent i = new Intent(LoginActivity.this, LoginTwoStepActivity.class);
+                                Bundle b = new Bundle();
+                                b.putString("username", response.getString("userName"));
+                                b.putString("contactlistid", response.getString("contactListID"));
+                                b.putString("coopid", response.getString("coopID"));
+                                b.putString("devicetype", deviceType);
+                                b.putString("loginusername", username);
+                                b.putString("deviceid", deviceID);
+                                b.putString("cellphone", response.getString("cellPhone"));
+                                i.putExtras(b);
+                                LoginActivity.this.startActivity(i);
+                                LoginActivity.this.finish();
+                            }
                         }
                         else{
                             var.showAlert(LoginActivity.this, resources.getString(R.string.alert_sign_in), response.getString("error_message"));

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -221,6 +222,8 @@ public class GcmClient {
         final String URL = var.cls_link + "/json/login_act.cfm?android=1&android_device=1";
         final String acfcode = var.acfcode;
 
+        Log.e(TAG, var.cls_link);
+
         JSONObject sendJSON = new JSONObject();
         try{
             sendJSON.put("username", username);
@@ -230,7 +233,6 @@ public class GcmClient {
             sendJSON.put("deviceidentifier", deviceID);
         } catch (JSONException e) {
             Log.e(TAG, "Error creating JSON Object");
-//            return false;
         }
 
         AsyncHttpClient client = new SyncHttpClient();
@@ -240,7 +242,6 @@ public class GcmClient {
             se = new StringEntity(sendJSON.toString());
         } catch (UnsupportedEncodingException e){
             Log.e(TAG, "Error setting string entity.");
-//            return false;
         }
 
         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
@@ -249,11 +250,14 @@ public class GcmClient {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 GcmClient.this.successSendToBackend = false;
+//                Log.e(TAG, responseString);
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
+                    Log.e(TAG, responseString);
+
                     JSONObject response = new JSONObject(responseString);
                     if(response.getInt("success") == 1){
                         GcmClient.this.session.setUUID(response.getString("loginUUID"));
@@ -270,6 +274,6 @@ public class GcmClient {
             }
         });
 
-//        return this.successSendToBackend;
     }
+
 }
